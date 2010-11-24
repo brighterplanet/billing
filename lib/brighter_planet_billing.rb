@@ -13,8 +13,8 @@ module BrighterPlanet
     def self.emission_estimate_service
       EmissionEstimateService.instance
     end
-    def self.generate_execution_id(key)
-      ::Digest::SHA256.hexdigest "#{key}#{::Time.now.to_f}"
+    def self.generate_execution_id
+      rand 1e64
     end
   end
 end

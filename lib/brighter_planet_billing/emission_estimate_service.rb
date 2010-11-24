@@ -66,7 +66,7 @@ module BrighterPlanet
         end
 
         def execute(&blk)
-          self.execution_id = Billing.generate_execution_id key
+          self.execution_id = Billing.generate_execution_id
           self.started_at = ::Time.now
           self.hoptoad_response = nil
           self.succeeded = false
