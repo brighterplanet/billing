@@ -6,7 +6,7 @@ module BrighterPlanet
       include ::Singleton
       attr_writer :aws_access_key_id
       attr_writer :aws_secret_access_key
-      attr_writer :domain
+      attr_writer :sdb_domain
       def sdb_domain
         @domain || ::ENV['BRIGHTER_PLANET_BILLING_SDB_DOMAIN']
       end
