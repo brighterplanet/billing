@@ -21,10 +21,12 @@ Gem::Specification.new do |s|
   
   s.add_development_dependency 'test-unit'
   s.add_development_dependency 'ruby-debug'
+  s.add_development_dependency 'sqlite3-ruby'
   s.add_dependency 'i18n'
   s.add_dependency 'aws', '>=2.3.26', '<2.4'
   s.add_dependency 'blockenspiel'
   s.add_dependency 'hoptoad_notifier', '2.3.0'
   s.add_dependency 'builder'
   s.add_dependency 'activesupport', '~>3'
+  s.add_dependency 'activerecord', '~>3'
 end

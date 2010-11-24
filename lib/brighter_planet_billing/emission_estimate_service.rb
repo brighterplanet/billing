@@ -7,8 +7,9 @@ module BrighterPlanet
       include ::Singleton
       attr_writer :disable_hoptoad
       def disable_hoptoad
-        @disable_hoptoad || (::ENV['BRIGHTER_PLANET_BILLING_DISABLE_HOPTOAD'].to_s == 'true')
+        @disable_hoptoad || (::ENV['BRIGHTER_PLANET_BILLING_DISABLE_HOPTOAD'] == 'true')
       end
+      alias :disable_hoptoad? :disable_hoptoad
       def queries
         Query
       end
@@ -21,7 +22,9 @@ module BrighterPlanet
             query.save
           end
           def by_execution_id(execution_id)
-            from_hash Billing.authoritative_store.get(execution_id)
+            if hsh = Billing.database.get(execution_id)
+              from_hash hsh
+            end
           end
           def from_hash(hsh)
             query = new
@@ -51,7 +54,7 @@ module BrighterPlanet
         end
 
         def save
-          Billing.authoritative_store.put execution_id, to_hash
+          Billing.database.put execution_id, to_hash
         end
 
         def to_hash
