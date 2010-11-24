@@ -33,7 +33,7 @@ module BrighterPlanet
       end
       def sdb
         return @sdb if @sdb.is_a? ::Aws::SdbInterface
-        @sdb = ::Aws::SdbInterface.new aws_access_key_id, aws_secret_access_key
+        @sdb = ::Aws::SdbInterface.new aws_access_key_id, aws_secret_access_key, :connection_mode => :per_thread
         @sdb.create_domain sdb_domain
         @sdb
       end
