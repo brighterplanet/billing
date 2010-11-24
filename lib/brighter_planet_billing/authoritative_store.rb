@@ -7,7 +7,7 @@ module BrighterPlanet
       attr_writer :aws_access_key_id
       attr_writer :aws_secret_access_key
       attr_writer :domain
-      def domain
+      def sdb_domain
         @domain || ::ENV['BRIGHTER_PLANET_BILLING_SDB_DOMAIN']
       end
       def aws_access_key_id
