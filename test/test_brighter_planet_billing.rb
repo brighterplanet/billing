@@ -5,7 +5,7 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     params = { 'make' => 'Nissan', 'key' => 'test_store_to_sdb', 'url' => 'http://carbon.brighterplanet.com/automobiles.json?make=Nissan' }
     answer = { 'emission' => '49291' }
     execution_id = nil
-    ::BrighterPlanet::Billing.emission_estimate_service.queries.create do |query|
+    ::BrighterPlanet::Billing.emission_estimate_service.queries.start do |query|
       query.key = params['key']
       query.input_params = params
       query.url = params['url']
@@ -24,6 +24,24 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     stored_query = ::BrighterPlanet::Billing.emission_estimate_service.queries.by_execution_id execution_id
     assert_equal 'emission_estimate_service', stored_query.service
     assert_equal answer['emission'], stored_query.output_params['emission']
+  end
+  
+  def test_catches_errors_with_hoptoad
+    ::ENV['BRIGHTER_PLANET_BILLING_DISABLE_HOPTOAD'] = 'false'
+    assert_raises(::BrighterPlanet::Billing::ReportedExceptionToHoptoad) do
+      ::BrighterPlanet::Billing.emission_estimate_service.queries.start do |query|
+        query.execute { raise StandardError }
+      end
+    end
+  end
+  
+  def test_catches_errors_without_hoptoad
+    ::ENV['BRIGHTER_PLANET_BILLING_DISABLE_HOPTOAD'] = 'true'
+    assert_raises(StandardError) do
+      ::BrighterPlanet::Billing.emission_estimate_service.queries.start do |query|
+        query.execute { raise StandardError }
+      end
+    end
   end
   
   # def test_lookup

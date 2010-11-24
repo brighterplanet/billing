@@ -23,7 +23,7 @@ end
     config.ignore.push ::BrighterPlanet::Billing::ReportedExceptionToHoptoad
   end
   # sabshere 7/1/10 just in case you want to send errors in development mode
-  if ::ENV['BRIGHTER_PLANET_BILLING_DISABLE_HOPTOAD'] == true
+  if ::BrighterPlanet::Billing.emission_estimate_service.disable_hoptoad
     config.development_environments = [ ::Rails.env ]
   else
     # treat all environments as production - so development errors will be reported

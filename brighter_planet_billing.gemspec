@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   
   s.add_development_dependency 'test-unit'
+  s.add_development_dependency 'ruby-debug'
   s.add_dependency 'i18n'
   s.add_dependency 'aws', '>=2.3.26', '<2.4'
   s.add_dependency 'blockenspiel'
