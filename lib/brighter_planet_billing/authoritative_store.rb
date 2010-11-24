@@ -8,7 +8,7 @@ module BrighterPlanet
       attr_writer :aws_secret_access_key
       attr_writer :sdb_domain
       def sdb_domain
-        @domain || ::ENV['BRIGHTER_PLANET_BILLING_SDB_DOMAIN']
+        @sdb_domain || ::ENV['BRIGHTER_PLANET_BILLING_SDB_DOMAIN']
       end
       def aws_access_key_id
         @aws_access_key_id || ::ENV['BRIGHTER_PLANET_BILLING_AWS_ACCESS_KEY_ID']
@@ -17,7 +17,7 @@ module BrighterPlanet
         @aws_secret_access_key || ::ENV['BRIGHTER_PLANET_BILLING_AWS_SECRET_ACCESS_KEY']
       end
       def get(execution_id)
-        sdb.get_attributes(domain, execution_id)[:attributes].inject({}) do |memo, hsh|
+        sdb.get_attributes(sdb_domain, execution_id)[:attributes].inject({}) do |memo, hsh|
           k, ary = hsh
           v = ary[0]
           memo[k] = ::ActiveSupport::JSON.decode v.to_s
@@ -29,12 +29,12 @@ module BrighterPlanet
         hsh.each do |k, v|
           hsh[k] = v.to_json
         end
-        sdb.put_attributes domain, execution_id, hsh, true
+        sdb.put_attributes sdb_domain, execution_id, hsh, true
       end
       def sdb
         return @sdb if @sdb.is_a? ::Aws::SdbInterface
         @sdb = ::Aws::SdbInterface.new aws_access_key_id, aws_secret_access_key
-        @sdb.create_domain domain
+        @sdb.create_domain sdb_domain
         @sdb
       end
     end
