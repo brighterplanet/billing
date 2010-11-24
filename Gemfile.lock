@@ -1,0 +1,42 @@
+PATH
+  remote: .
+  specs:
+    brighter_planet_billing (0.0.1)
+      activesupport (~> 3)
+      aws (>= 2.3.26, < 2.4)
+      blockenspiel
+      builder
+      hoptoad_notifier (= 2.3.0)
+      i18n
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+    activesupport (3.0.3)
+    aws (2.3.26)
+      activesupport
+      http_connection
+      uuidtools
+      xml-simple
+    blockenspiel (0.4.1)
+    builder (2.1.2)
+    hoptoad_notifier (2.3.0)
+      activesupport
+    http_connection (1.4.0)
+    i18n (0.4.1)
+    test-unit (2.1.1)
+    uuidtools (2.1.1)
+    xml-simple (1.0.12)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  activesupport (~> 3)
+  aws (>= 2.3.26, < 2.4)
+  blockenspiel
+  brighter_planet_billing!
+  builder
+  hoptoad_notifier (= 2.3.0)
+  i18n
+  test-unit
