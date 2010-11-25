@@ -17,12 +17,6 @@ module BrighterPlanet
       def get(execution_id)
         Billing.authoritative_database.get execution_id
       end
-      def synchronized?
-        Billing.fast_database.synchronized?
-      end
-      def synchronize
-        Billing.fast_database.synchronize
-      end
     end
   end
 end

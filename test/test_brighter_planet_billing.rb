@@ -54,7 +54,7 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     end
     sleep 1
     assert_nil ::BrighterPlanet::Billing.emission_estimate_service.queries.by_execution_id(execution_id)
-    ::BrighterPlanet::Billing.database.synchronize
+    ::BrighterPlanet::Billing.synchronize
     sleep 1
     stored_query = ::BrighterPlanet::Billing.emission_estimate_service.queries.by_execution_id execution_id
     assert_equal 'emission_estimate_service', stored_query.service

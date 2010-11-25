@@ -10,6 +10,12 @@ require 'brighter_planet_billing/emission_estimate_service'
 
 module BrighterPlanet
   module Billing
+    def self.synchronized?
+      Billing.fast_database.synchronized?
+    end
+    def self.synchronize
+      Billing.fast_database.synchronize
+    end
     def self.database
       Database.instance
     end
