@@ -34,10 +34,6 @@ module BrighterPlanet
   end
 end
 
-unless ::BrighterPlanet::Billing.database.slow_is_ok?
-  ::BrighterPlanet::Billing::FastDatabase::Billable.create_table
-end
-
 ::HoptoadNotifier.configure do |config|
   unless config.ignore.include? ::BrighterPlanet::Billing::ReportedExceptionToHoptoad
     config.ignore.push ::BrighterPlanet::Billing::ReportedExceptionToHoptoad
