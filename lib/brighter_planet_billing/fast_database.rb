@@ -7,13 +7,14 @@ module BrighterPlanet
       def synchronized?
         Billable.count.zero?
       end
-      def put(*args)
-        Billable.create! :content => args
+      def put(execution_id, hsh)
+        billable = Billable.find_or_create_by_execution_id execution_id
+        billable.update_attributes! :content => hsh
       end
       def synchronize
         until synchronized?
           billable = Billable.first
-          Billing.authoritative_database.put *(billable.content)
+          Billing.authoritative_database.put billable.execution_id, billable.content
           billable.destroy
         end
       end
@@ -24,6 +25,7 @@ module BrighterPlanet
           def create_table
             unless connection.table_exists?('brighter_planet_billing_billables')
               connection.create_table 'brighter_planet_billing_billables' do |t|
+                t.string :execution_id
                 t.text :content
                 t.timestamps
               end

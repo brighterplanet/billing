@@ -29,7 +29,7 @@ module BrighterPlanet
       EmissionEstimateService.instance
     end
     def self.generate_execution_id
-      rand 1e64
+      ::Digest::SHA256.hexdigest rand(1e64).to_s
     end
   end
 end
