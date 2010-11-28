@@ -5,11 +5,6 @@ module BrighterPlanet
   module Billing
     class EmissionEstimateService
       include ::Singleton
-      attr_writer :disable_hoptoad
-      def disable_hoptoad
-        @disable_hoptoad || (::ENV['BRIGHTER_PLANET_BILLING_DISABLE_HOPTOAD'] == 'true')
-      end
-      alias :disable_hoptoad? :disable_hoptoad
       def queries
         Query
       end
@@ -37,7 +32,7 @@ module BrighterPlanet
           def start(&blk)
             query = new
             ::Blockenspiel.invoke blk, query
-            raise "You need to call #execute inside of the start {} block!" unless query.executed?
+            raise "You need to call #execute inside of the start {} block!" unless Billing.config.debug? and query.executed?
             query.save
           end
           def find_by_execution_id(execution_id)
@@ -88,6 +83,7 @@ module BrighterPlanet
         end
 
         def execute(&blk)
+          raise "You can only call #execute once inside of the start {} block!" if Billing.config.debug? and query.executed?
           self.execution_id = Billing.generate_execution_id
           self.started_at = ::Time.now
           self.hoptoad_response = nil
@@ -95,7 +91,7 @@ module BrighterPlanet
           self.realtime = ::Benchmark.realtime { blk.call }
           self.succeeded = true
         rescue ::Exception => exception
-          if Billing.emission_estimate_service.disable_hoptoad
+          if Billing.config.disable_hoptoad
             raise exception
           else
             # provide some things that hoptoad usually pulls from the controller or request
@@ -106,7 +102,7 @@ module BrighterPlanet
               opts[:session] = input_params[:session]
             end
             self.hoptoad_response = ::HoptoadNotifier.notify_or_ignore(exception, opts).body
-            raise ::BrighterPlanet::Billing::ReportedExceptionToHoptoad
+            raise Billing::ReportedExceptionToHoptoad
           end
         ensure
           self.emitter_common_name = emitter_common_name

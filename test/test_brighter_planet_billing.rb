@@ -2,8 +2,9 @@ require 'helper'
 
 class TestBrighterPlanetBilling < Test::Unit::TestCase
   def setup
-    ::BrighterPlanet::Billing.database.slow_is_ok = false
-    ::BrighterPlanet::Billing.emission_estimate_service.disable_hoptoad = false
+    ::BrighterPlanet::Billing.setup
+    ::BrighterPlanet::Billing.config.slow_is_ok = false
+    ::BrighterPlanet::Billing.config.disable_hoptoad = false
   end
   
   def test_report_per_key
@@ -12,7 +13,7 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
   end
   
   def test_immediate_store_to_sdb
-    ::BrighterPlanet::Billing.database.slow_is_ok = true
+    ::BrighterPlanet::Billing.config.slow_is_ok = true
     params = { 'make' => 'Nissan', 'key' => 'test_store_to_sdb', 'url' => 'http://carbon.brighterplanet.com/automobiles.json?make=Nissan' }
     answer = { 'emission' => '49291' }
     execution_id = nil
@@ -41,7 +42,7 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     params = { 'make' => 'Nissan', 'key' => 'test_store_to_sdb', 'url' => 'http://carbon.brighterplanet.com/automobiles.json?make=Nissan' }
     answer = { 'emission' => '49291' }
     execution_id = nil
-    assert !::BrighterPlanet::Billing.database.slow_is_ok?
+    assert !::BrighterPlanet::Billing.config.slow_is_ok?
     ::BrighterPlanet::Billing.emission_estimate_service.queries.start do |query|
       query.key = params['key']
       query.input_params = params
@@ -75,7 +76,7 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
   end
   
   def test_catches_errors_without_hoptoad
-    ::BrighterPlanet::Billing.emission_estimate_service.disable_hoptoad = true
+    ::BrighterPlanet::Billing.config.disable_hoptoad = true
     assert_raises(StandardError) do
       ::BrighterPlanet::Billing.emission_estimate_service.queries.start do |query|
         query.execute { raise StandardError }
