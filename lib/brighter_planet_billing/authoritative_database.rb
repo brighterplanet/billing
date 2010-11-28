@@ -16,15 +16,30 @@ module BrighterPlanet
       def aws_secret_access_key
         @aws_secret_access_key || ::ENV['BRIGHTER_PLANET_BILLING_AWS_SECRET_ACCESS_KEY']
       end
-      def get(execution_id)
-        response = sdb.get_attributes sdb_domain, execution_id
-        return if response[:attributes].empty?
-        response[:attributes].inject({}) do |memo, hsh|
-          k, ary = hsh
+      def prep_result_hash(hsh)
+        hsh.inject({}) do |memo, subhsh|
+          k, ary = subhsh
           v = ary[0]
           memo[k] = ::ActiveSupport::JSON.decode v.to_s
           memo
         end
+      end
+      def prep_search_param(str)
+        ::ActiveSupport::JSON.encode str.to_s
+      end
+      def find_all_by_key(key)
+        results = []
+        sdb.select ["select * from #{sdb_domain} where key = ?", prep_search_param(key)] do |partial_results|
+          partial_results[:items].each do |item|
+            results.push prep_result_hash(item.values[0])
+          end
+        end
+        results
+      end
+      def find_by_execution_id(execution_id)
+        result = sdb.get_attributes sdb_domain, execution_id
+        return if result[:attributes].empty?
+        prep_result_hash result[:attributes]
       end
       def put(execution_id, hsh)
         hsh = hsh.dup

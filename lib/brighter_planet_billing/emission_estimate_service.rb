@@ -13,6 +13,25 @@ module BrighterPlanet
       def queries
         Query
       end
+      def reports
+        Report
+      end
+      class Report
+        class << self
+          def find_by_key(key)
+            new key
+          end
+        end
+        attr_reader :key
+        def initialize(key)
+          @key = key
+        end
+        def queries
+          Billing.database.find_all_by_key(key).map do |hsh|
+            Query.from_hash hsh
+          end
+        end
+      end
       class Query
         class << self
           def start(&blk)
@@ -21,8 +40,8 @@ module BrighterPlanet
             raise "You need to call #execute inside of the start {} block!" unless query.executed?
             query.save
           end
-          def by_execution_id(execution_id)
-            if hsh = Billing.database.get(execution_id)
+          def find_by_execution_id(execution_id)
+            if hsh = Billing.database.find_by_execution_id(execution_id)
               from_hash hsh
             end
           end

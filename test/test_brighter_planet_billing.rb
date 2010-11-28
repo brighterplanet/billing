@@ -6,6 +6,11 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     ::BrighterPlanet::Billing.emission_estimate_service.disable_hoptoad = false
   end
   
+  def test_report_per_key
+    report = ::BrighterPlanet::Billing.emission_estimate_service.reports.find_by_key '17a0c34541c953b5430adf8e2a1f50fb'
+    assert(report.queries.length > 0)
+  end
+  
   def test_immediate_store_to_sdb
     ::BrighterPlanet::Billing.database.slow_is_ok = true
     params = { 'make' => 'Nissan', 'key' => 'test_store_to_sdb', 'url' => 'http://carbon.brighterplanet.com/automobiles.json?make=Nissan' }
@@ -27,7 +32,7 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
       execution_id = query.execution_id
     end
     sleep 1
-    stored_query = ::BrighterPlanet::Billing.emission_estimate_service.queries.by_execution_id execution_id
+    stored_query = ::BrighterPlanet::Billing.emission_estimate_service.queries.find_by_execution_id execution_id
     assert_equal 'emission_estimate_service', stored_query.service
     assert_equal answer['emission'], stored_query.output_params['emission']
   end
@@ -53,10 +58,10 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
       execution_id = query.execution_id
     end
     sleep 1
-    assert_nil ::BrighterPlanet::Billing.emission_estimate_service.queries.by_execution_id(execution_id)
+    assert_nil ::BrighterPlanet::Billing.emission_estimate_service.queries.find_by_execution_id(execution_id)
     ::BrighterPlanet::Billing.synchronize
     sleep 1
-    stored_query = ::BrighterPlanet::Billing.emission_estimate_service.queries.by_execution_id execution_id
+    stored_query = ::BrighterPlanet::Billing.emission_estimate_service.queries.find_by_execution_id execution_id
     assert_equal 'emission_estimate_service', stored_query.service
     assert_equal answer['emission'], stored_query.output_params['emission']
   end
