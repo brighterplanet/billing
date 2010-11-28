@@ -1,7 +1,7 @@
-require 'digest'
 require 'singleton'
 require 'active_support/core_ext/object/blank'
 require 'active_support/json'
+require 'active_support/secure_random'
 require 'brighter_planet_billing/config'
 require 'brighter_planet_billing/hoptoad'
 require 'brighter_planet_billing/database'
@@ -41,9 +41,8 @@ module BrighterPlanet
         end
       end
     end
-    # Hashing this makes a pretty key that everyone will treat as a string (instead of a number)
     def self.generate_execution_id
-      ::Digest::SHA256.hexdigest rand(1e64).to_s
+      ::ActiveSupport::SecureRandom.hex 64
     end
     def self.synchronized?
       fast_database.synchronized?
