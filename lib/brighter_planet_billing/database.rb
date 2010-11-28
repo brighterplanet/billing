@@ -12,8 +12,8 @@ module BrighterPlanet
       def find_by_execution_id(execution_id)
         Billing.authoritative_database.find_by_execution_id execution_id
       end
-      def find_all_by_key(key)
-        Billing.authoritative_database.find_all_by_key key
+      def each_by_key(key, &blk)
+        Billing.authoritative_database.each_by_key key, &blk
       end
     end
   end

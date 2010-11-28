@@ -7,9 +7,26 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     ::BrighterPlanet::Billing.config.disable_hoptoad = false
   end
   
-  def test_report_per_key
-    report = ::BrighterPlanet::Billing.emission_estimate_service.reports.find_by_key '17a0c34541c953b5430adf8e2a1f50fb'
-    assert(report.queries.length > 0)
+  def test_key_yields_queries
+    key = ::BrighterPlanet::Billing.emission_estimate_service.keys.find_by_key '17a0c34541c953b5430adf8e2a1f50fb'
+    catch :found_it do
+      assert_nothing_raised do
+        key.each_query do |query|
+          throw :found_it
+          raise "didn't find it!"
+        end
+      end
+    end
+  end
+  
+  def test_query_to_csv
+    ticks = 25
+    key = ::BrighterPlanet::Billing.emission_estimate_service.keys.find_by_key '17a0c34541c953b5430adf8e2a1f50fb'
+    key.each_query do |query|
+      assert(query.to_csv.length > 0)
+      ticks -= 1
+      break if ticks < 0
+    end
   end
   
   def test_immediate_store_to_sdb

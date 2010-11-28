@@ -8,10 +8,10 @@ module BrighterPlanet
       def queries
         Query
       end
-      def reports
-        Report
+      def keys
+        Key
       end
-      class Report
+      class Key
         class << self
           def find_by_key(key)
             new key
@@ -21,9 +21,9 @@ module BrighterPlanet
         def initialize(key)
           @key = key
         end
-        def queries
-          Billing.database.find_all_by_key(key).map do |hsh|
-            Query.from_hash hsh
+        def each_query(&blk)
+          Billing.database.each_by_key(key) do |hsh|
+            yield Query.from_hash(hsh)
           end
         end
       end
@@ -32,7 +32,7 @@ module BrighterPlanet
           def start(&blk)
             query = new
             ::Blockenspiel.invoke blk, query
-            raise "You need to call #execute inside of the start {} block!" unless Billing.config.debug? and query.executed?
+            raise "You need to call #execute inside of the start {} block!" if Billing.config.debug? and not query.executed?
             query.save
           end
           def find_by_execution_id(execution_id)
@@ -62,7 +62,7 @@ module BrighterPlanet
         attr_accessor :hoptoad_response
         attr_accessor :succeeded
         attr_accessor :realtime
-
+        attr_accessor :session
         def initialize
           @service = 'emission_estimate_service'
         end
@@ -76,6 +76,30 @@ module BrighterPlanet
             memo[ivar_name.to_s.sub('@','')] = instance_variable_get ivar_name
             memo
           end
+        end
+        
+        CSV_HEADERS = %w{
+          service
+          key
+          input_params
+          url
+          emitter_common_name
+          remote_ip
+          referer
+          output_params
+          execution_id
+          started_at
+          stopped_at
+          hoptoad_response
+          succeeded
+          realtime
+          session
+        }
+        def to_csv
+          CSV_HEADERS.map do |k|
+            v = send k
+            '"' + v.to_s.gsub('"', '\"') + '"'
+          end.join(',')
         end
 
         def executed?

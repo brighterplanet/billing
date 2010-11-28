@@ -15,14 +15,12 @@ module BrighterPlanet
       def prep_search_param(str)
         ::ActiveSupport::JSON.encode str.to_s
       end
-      def find_all_by_key(key)
-        results = []
+      def each_by_key(key, &blk)
         sdb.select ["select * from #{Billing.config.sdb_domain} where key = ?", prep_search_param(key)] do |partial_results|
           partial_results[:items].each do |item|
-            results.push prep_result_hash(item.values[0])
+            yield prep_result_hash(item.values[0])
           end
         end
-        results
       end
       def find_by_execution_id(execution_id)
         result = sdb.get_attributes Billing.config.sdb_domain, execution_id
