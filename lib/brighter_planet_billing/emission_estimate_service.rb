@@ -103,7 +103,7 @@ module BrighterPlanet
         def to_csv
           CSV_HEADERS.map do |k|
             v = send k
-            '"' + v.to_s.gsub('"', '\"') + '"'
+            '"' + v.to_json.gsub('"', '\"') + '"'
           end.join(',')
         end
 
