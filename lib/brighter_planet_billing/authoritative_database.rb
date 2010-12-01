@@ -1,45 +1,55 @@
-require 'aws'
+require 'mongo'
 
 module BrighterPlanet
   module Billing
     class AuthoritativeDatabase
       include ::Singleton
-      def prep_result_hash(hsh)
-        hsh.inject({}) do |memo, subhsh|
-          k, ary = subhsh
-          v = ary[0]
-          memo[k] = ::ActiveSupport::JSON.decode v.to_s
-          memo
+      def conditions(key, year, month)
+        if year and month
+          { 'key' => key, 'year' => year, 'month' => month }
+        elsif not year and not month
+          { 'key' => key }
+        else
+          raise "don't know how to deal with (#{key}, #{year}, #{month})"
         end
       end
-      def prep_search_param(str)
-        ::ActiveSupport::JSON.encode str.to_s
-      end
-      def each_by_key(key, &blk)
-        sdb.select ["select * from #{Billing.config.sdb_domain} where key = ?", prep_search_param(key)] do |partial_results|
-          partial_results[:items].each do |item|
-            yield prep_result_hash(item.values[0])
+      def each_by_key(key, year = nil, month = nil, &blk)
+        collection.find conditions(key, year, month) do |cursor|
+          cursor.each do |doc|
+            yield doc
           end
         end
       end
       def find_by_execution_id(execution_id)
-        result = sdb.get_attributes Billing.config.sdb_domain, execution_id
-        return if result[:attributes].empty?
-        prep_result_hash result[:attributes]
+        collection.find_one 'execution_id' => execution_id
       end
       def put(execution_id, hsh)
-        hsh = hsh.dup
-        hsh.each do |k, v|
-          hsh[k] = v.to_json
-        end
-        sdb.put_attributes Billing.config.sdb_domain, execution_id, hsh, true
+        hsh['execution_id'] = execution_id
+        collection.update({ 'execution_id' => execution_id }, hsh, :upsert => true )
       end
-      def sdb
-        return @sdb if @sdb.is_a? ::Aws::SdbInterface
-        @sdb = ::Aws::SdbInterface.new Billing.config.aws_access_key_id, Billing.config.aws_secret_access_key, :connection_mode => :per_thread
-        @sdb.create_domain Billing.config.sdb_domain
-        @sdb
+      def connection
+        @connection ||= ::Mongo::Connection.new ::BrighterPlanet::Billing.config.mongo_host, ::BrighterPlanet::Billing.config.mongo_port
+      end
+      def db
+        return @db if @db.is_a? ::Mongo::DB
+        @db = connection.db ::BrighterPlanet::Billing.config.mongo_database
+        @db.authenticate ::BrighterPlanet::Billing.config.mongo_username, ::BrighterPlanet::Billing.config.mongo_password
+        @db
+      end
+      def collection
+        return @collection if @collection.is_a? ::Mongo::Collection
+        @collection = db.collection 'billables'
+        @collection.ensure_index 'execution_id'
+        @collection
       end
     end
   end
 end
+
+# if defined?(PhusionPassenger)
+#   PhusionPassenger.on_event(:starting_worker_process) do |forked|
+#     if forked
+#       # Create new connection here
+#     end
+#   end
+# end

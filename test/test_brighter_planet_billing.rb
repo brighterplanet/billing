@@ -7,7 +7,7 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     ::BrighterPlanet::Billing.config.disable_hoptoad = false
   end
   
-  def test_key_yields_queries
+  def test_zzz_key_yields_queries
     key = ::BrighterPlanet::Billing.emission_estimate_service.keys.find_by_key '17a0c34541c953b5430adf8e2a1f50fb'
     catch :found_it do
       assert_nothing_raised do
@@ -18,9 +18,30 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
       end
     end
   end
+
+  def test_zzz_key_yields_queries_per_month
+    key = ::BrighterPlanet::Billing.emission_estimate_service.keys.find_by_key '17a0c34541c953b5430adf8e2a1f50fb'
+    catch :found_it do
+      assert_nothing_raised do
+        key.each_query(2010, 11) do |query|
+          throw :found_it
+          raise "didn't find it!"
+        end
+      end
+    end
+  end
   
-  def test_query_to_csv
-    ticks = 25
+  def test_zzz_key_yields_queries_per_month_false_positives
+    key = ::BrighterPlanet::Billing.emission_estimate_service.keys.find_by_key '17a0c34541c953b5430adf8e2a1f50fb'
+    assert_nothing_raised do
+      key.each_query(2009, 11) do |query|
+        raise "uhh ohh, found something!"
+      end
+    end
+  end
+  
+  def test_zzz_query_to_csv
+    ticks = 2
     key = ::BrighterPlanet::Billing.emission_estimate_service.keys.find_by_key '17a0c34541c953b5430adf8e2a1f50fb'
     key.each_query do |query|
       assert(query.to_csv.length > 0)
@@ -29,59 +50,63 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     end
   end
   
-  def test_immediate_store_to_sdb
+  def test_immediate_store_to_mongo
     ::BrighterPlanet::Billing.config.slow_is_ok = true
-    params = { 'make' => 'Nissan', 'key' => 'test_store_to_sdb', 'url' => 'http://carbon.brighterplanet.com/automobiles.json?make=Nissan' }
+    params = { 'make' => 'Nissan', 'key' => 'test_store_to_mongo', 'url' => 'http://carbon.brighterplanet.com/automobiles.json?make=Nissan' }
     answer = { 'emission' => '49291' }
     execution_id = nil
-    ::BrighterPlanet::Billing.emission_estimate_service.queries.start do |query|
-      query.key = params['key']
-      query.input_params = params
-      query.url = params['url']
-      query.emitter_common_name = 'automobile'
-      if params['key'] and params['url']
-        query.remote_ip = params['remote_ip']
-        query.referer = params['referer']
+    5.times {
+      ::BrighterPlanet::Billing.emission_estimate_service.queries.start do |query|
+        query.key = params['key']
+        query.input_params = params
+        query.url = params['url']
+        query.emitter_common_name = 'automobile'
+        if params['key'] and params['url']
+          query.remote_ip = params['remote_ip']
+          query.referer = params['referer']
+        end
+        query.execute do
+          # rubber stamp
+        end
+        query.output_params = answer
+        execution_id = query.execution_id
       end
-      query.execute do
-        # rubber stamp
-      end
-      query.output_params = answer
-      execution_id = query.execution_id
-    end
-    sleep 1
-    stored_query = ::BrighterPlanet::Billing.emission_estimate_service.queries.find_by_execution_id execution_id
-    assert_equal 'emission_estimate_service', stored_query.service
-    assert_equal answer['emission'], stored_query.output_params['emission']
+      sleep 0.25
+      stored_query = ::BrighterPlanet::Billing.emission_estimate_service.queries.find_by_execution_id execution_id
+      assert_equal 'emission_estimate_service', stored_query.service
+      assert_equal answer['emission'], stored_query.output_params['emission']
+    }
   end
   
-  def test_delayed_store_to_sdb
-    params = { 'make' => 'Nissan', 'key' => 'test_store_to_sdb', 'url' => 'http://carbon.brighterplanet.com/automobiles.json?make=Nissan' }
-    answer = { 'emission' => '49291' }
+  def test_delayed_store_to_mongo
+    params = { 'make' => 'Nissan', 'key' => 'test_store_to_mongo', 'url' => 'http://carbon.brighterplanet.com/automobiles.json?make=Nissan' }
+    answer = { 'emission' => '29102' }
     execution_id = nil
     assert !::BrighterPlanet::Billing.config.slow_is_ok?
-    ::BrighterPlanet::Billing.emission_estimate_service.queries.start do |query|
-      query.key = params['key']
-      query.input_params = params
-      query.url = params['url']
-      query.emitter_common_name = 'automobile'
-      if params['key'] and params['url']
-        query.remote_ip = params['remote_ip']
-        query.referer = params['referer']
+    5.times {
+      ::BrighterPlanet::Billing.emission_estimate_service.queries.start do |query|
+        query.key = params['key']
+        query.input_params = params
+        query.url = params['url']
+        query.emitter_common_name = 'automobile'
+        if params['key'] and params['url']
+          query.remote_ip = params['remote_ip']
+          query.referer = params['referer']
+        end
+        query.execute do
+          # rubber stamp
+        end
+        query.output_params = answer
+        execution_id = query.execution_id
       end
-      query.execute do
-        # rubber stamp
-      end
-      query.output_params = answer
-      execution_id = query.execution_id
-    end
-    sleep 1
-    assert_nil ::BrighterPlanet::Billing.emission_estimate_service.queries.find_by_execution_id(execution_id)
-    ::BrighterPlanet::Billing.synchronize
-    sleep 1
-    stored_query = ::BrighterPlanet::Billing.emission_estimate_service.queries.find_by_execution_id execution_id
-    assert_equal 'emission_estimate_service', stored_query.service
-    assert_equal answer['emission'], stored_query.output_params['emission']
+      sleep 0.25
+      assert_nil ::BrighterPlanet::Billing.emission_estimate_service.queries.find_by_execution_id(execution_id)
+      ::BrighterPlanet::Billing.synchronize
+      sleep 0.25
+      stored_query = ::BrighterPlanet::Billing.emission_estimate_service.queries.find_by_execution_id execution_id
+      assert_equal 'emission_estimate_service', stored_query.service
+      assert_equal answer['emission'], stored_query.output_params['emission']
+    }
   end
   
   def test_catches_errors_with_hoptoad

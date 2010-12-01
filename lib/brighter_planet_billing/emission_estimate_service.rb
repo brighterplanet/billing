@@ -21,8 +21,8 @@ module BrighterPlanet
         def initialize(key)
           @key = key
         end
-        def each_query(&blk)
-          Billing.database.each_by_key(key) do |hsh|
+        def each_query(year = nil, month = nil, &blk)
+          Billing.database.each_by_key(key, year, month) do |hsh|
             yield Query.from_hash(hsh)
           end
         end
@@ -43,11 +43,14 @@ module BrighterPlanet
           def from_hash(hsh)
             query = new
             hsh.each do |k, v|
+              next if k == '_id'
               query.send "#{k}=", v
             end
             query
           end
         end
+        attr_accessor :year
+        attr_accessor :month
         attr_accessor :service
         attr_accessor :key
         attr_accessor :input_params
@@ -79,6 +82,8 @@ module BrighterPlanet
         end
         
         CSV_HEADERS = %w{
+          year
+          month
           service
           key
           input_params
@@ -109,7 +114,10 @@ module BrighterPlanet
         def execute(&blk)
           raise "You can only call #execute once inside of the start {} block!" if Billing.config.debug? and query.executed?
           self.execution_id = Billing.generate_execution_id
-          self.started_at = ::Time.now
+          now = ::Time.now
+          self.year = now.year
+          self.month = now.month
+          self.started_at = now
           self.hoptoad_response = nil
           self.succeeded = false
           self.realtime = ::Benchmark.realtime { blk.call }
