@@ -6,7 +6,7 @@ module BrighterPlanet
       include ::Singleton
       def conditions(key, year, month)
         if year and month
-          { 'key' => key, 'year' => year, 'month' => month }
+          { 'key' => key, 'year' => year.to_i, 'month' => month.to_i }
         elsif not year and not month
           { 'key' => key }
         else
