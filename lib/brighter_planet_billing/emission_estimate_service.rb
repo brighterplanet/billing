@@ -44,7 +44,10 @@ module BrighterPlanet
             query = new
             hsh.each do |k, v|
               next if k == '_id'
-              query.send "#{k}=", v
+              begin
+                query.send "#{k}=", v
+              rescue ::NoMethodError
+              end
             end
             query
           end
@@ -65,7 +68,6 @@ module BrighterPlanet
         attr_accessor :hoptoad_response
         attr_accessor :succeeded
         attr_accessor :realtime
-        attr_accessor :session
         def initialize
           @service = 'emission_estimate_service'
         end
@@ -98,7 +100,6 @@ module BrighterPlanet
           hoptoad_response
           succeeded
           realtime
-          session
         }
         def to_csv
           CSV_HEADERS.map do |k|
