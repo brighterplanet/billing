@@ -5,7 +5,7 @@ module BrighterPlanet
     class FastDatabase
       include ::Singleton
       def synchronized?
-        Billable.count.zero?
+        Billable.where("failed = ?", false).count.zero?
       end
       def put(execution_id, hsh)
         billable = Billable.find_or_create_by_execution_id execution_id
@@ -14,8 +14,12 @@ module BrighterPlanet
       def synchronize
         until synchronized?
           billable = Billable.first
-          Billing.authoritative_database.put billable.execution_id, billable.content
-          billable.destroy
+          begin
+            Billing.authoritative_database.put billable.execution_id, billable.content
+            billable.destroy
+          rescue
+            billable.update_attributes! :failed => true
+          end
         end
       end
       class Billable < ::ActiveRecord::Base
@@ -27,6 +31,7 @@ module BrighterPlanet
               connection.create_table 'brighter_planet_billing_billables' do |t|
                 t.string :execution_id
                 t.text :content
+                t.boolean :failed, :default => false
                 t.timestamps
               end
               reset_column_information
