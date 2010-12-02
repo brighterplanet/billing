@@ -42,7 +42,7 @@ module BrighterPlanet
       end
     end
     def self.generate_execution_id
-      ::ActiveSupport::SecureRandom.hex 64
+      ::ActiveSupport::SecureRandom.hex 40
     end
     def self.synchronized?
       fast_database.synchronized?
