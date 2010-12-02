@@ -39,7 +39,7 @@ module BrighterPlanet
       def collection
         return @collection if @collection.is_a? ::Mongo::Collection
         @collection = db.collection 'billables'
-        @collection.ensure_index 'execution_id'
+        # @collection.ensure_index 'execution_id'
         @collection
       end
     end
