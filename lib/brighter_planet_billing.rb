@@ -1,7 +1,11 @@
 require 'singleton'
-require 'active_support/core_ext/object/blank'
-require 'active_support/json'
-require 'active_support/secure_random'
+require 'active_support'
+require 'active_support/version'
+if ::ActiveSupport::VERSION::MAJOR == 3
+  require 'active_support/core_ext/object/blank'
+  require 'active_support/json'
+  require 'active_support/secure_random'
+end
 require 'brighter_planet_billing/config'
 require 'brighter_planet_billing/hoptoad'
 require 'brighter_planet_billing/database'

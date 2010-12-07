@@ -2,8 +2,8 @@ PATH
   remote: .
   specs:
     brighter_planet_billing (0.0.1)
-      activerecord (~> 3)
-      activesupport (~> 3)
+      activerecord (>= 2.3)
+      activesupport (>= 2.3)
       blockenspiel
       bson
       bson_ext
@@ -15,43 +15,34 @@ PATH
 GEM
   remote: http://rubygems.org/
   specs:
-    activemodel (3.0.3)
-      activesupport (= 3.0.3)
-      builder (~> 2.1.2)
-      i18n (~> 0.4)
-    activerecord (3.0.3)
-      activemodel (= 3.0.3)
-      activesupport (= 3.0.3)
-      arel (~> 2.0.2)
-      tzinfo (~> 0.3.23)
-    activesupport (3.0.3)
-    arel (2.0.4)
+    activerecord (2.3.10)
+      activesupport (= 2.3.10)
+    activesupport (2.3.10)
     blockenspiel (0.4.1)
     bson (1.1.4)
     bson_ext (1.1.4)
-    builder (2.1.2)
-    columnize (0.3.1)
+    builder (3.0.0)
+    columnize (0.3.2)
     hoptoad_notifier (2.3.0)
       activesupport
-    i18n (0.4.1)
+    i18n (0.5.0)
     linecache (0.43)
     mongo (1.1.4)
       bson (>= 1.1.1)
-    ruby-debug (0.10.3)
+    ruby-debug (0.10.4)
       columnize (>= 0.1)
-      ruby-debug-base (~> 0.10.3.0)
-    ruby-debug-base (0.10.3)
+      ruby-debug-base (~> 0.10.4.0)
+    ruby-debug-base (0.10.4)
       linecache (>= 0.3)
-    sqlite3-ruby (1.3.1)
-    test-unit (2.1.1)
-    tzinfo (0.3.23)
+    sqlite3-ruby (1.3.2)
+    test-unit (2.1.2)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
-  activerecord (~> 3)
-  activesupport (~> 3)
+  activerecord (>= 2.3)
+  activesupport (>= 2.3)
   blockenspiel
   brighter_planet_billing!
   bson

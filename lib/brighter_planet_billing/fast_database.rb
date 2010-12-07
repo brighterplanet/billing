@@ -5,7 +5,7 @@ module BrighterPlanet
     class FastDatabase
       include ::Singleton
       def synchronized?
-        Billable.where("failed = ?", false).count.zero?
+        Billable.count('failed IS NULL or failed = 0').zero?
       end
       def put(execution_id, hsh)
         billable = Billable.find_or_create_by_execution_id execution_id
