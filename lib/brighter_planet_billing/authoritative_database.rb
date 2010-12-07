@@ -4,6 +4,9 @@ module BrighterPlanet
   module Billing
     class AuthoritativeDatabase
       include ::Singleton
+      def count
+        collection.count
+      end
       def conditions(key, year, month)
         if year and month
           { 'key' => key, 'year' => year.to_i, 'month' => month.to_i }

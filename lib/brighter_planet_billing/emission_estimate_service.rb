@@ -40,6 +40,9 @@ module BrighterPlanet
               from_hash hsh
             end
           end
+          def count
+            Billing.database.count
+          end
           def from_hash(hsh)
             query = new
             hsh.each do |k, v|

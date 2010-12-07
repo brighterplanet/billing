@@ -15,6 +15,9 @@ module BrighterPlanet
       def each_by_key(key, year = nil, month = nil, &blk)
         Billing.authoritative_database.each_by_key key, year, month, &blk
       end
+      def count
+        Billing.authoritative_database.count
+      end
     end
   end
 end
