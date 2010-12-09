@@ -36,13 +36,6 @@ module BrighterPlanet
         unless hoptoad_config.ignore.include? ReportedExceptionToHoptoad
           hoptoad_config.ignore.push ReportedExceptionToHoptoad
         end
-        # sabshere 7/1/10 just in case you want to send errors in development mode
-        if defined?(::Rails) and config.disable_hoptoad?
-          hoptoad_config.development_environments = [ ::Rails.env ]
-        else
-          # treat all environments as production - so development errors will be reported
-          hoptoad_config.development_environments = []
-        end
       end
     end
     def self.generate_execution_id
