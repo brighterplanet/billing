@@ -137,7 +137,9 @@ module BrighterPlanet
               opts[:params] = input_params
               opts[:session] = input_params[:session]
             end
-            self.hoptoad_response = ::HoptoadNotifier.notify_or_ignore(exception, opts).body
+            if hoptoad_container = ::HoptoadNotifier.notify_or_ignore exception, opts
+              self.hoptoad_response = hoptoad_container.body
+            end
             raise Billing::ReportedExceptionToHoptoad
           end
         ensure
