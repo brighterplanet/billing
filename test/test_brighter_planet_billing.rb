@@ -59,7 +59,7 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     params = { 'make' => 'Nissan', 'key' => 'test_store_to_mongo', 'url' => 'http://carbon.brighterplanet.com/automobiles.json?make=Nissan' }
     answer = { 'emission' => '49291' }
     execution_id = nil
-    5.times {
+    2.times {
       ::BrighterPlanet::Billing.emission_estimate_service.queries.start do |query|
         query.key = params['key']
         query.input_params = params
@@ -75,19 +75,19 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
         query.output_params = answer
         execution_id = query.execution_id
       end
-      sleep 0.25
+      sleep 1
       stored_query = ::BrighterPlanet::Billing.emission_estimate_service.queries.find_by_execution_id execution_id
       assert_equal 'emission_estimate_service', stored_query.service
       assert_equal answer['emission'], stored_query.output_params['emission']
     }
   end
-  
+
   def test_delayed_store_to_mongo
     params = { 'make' => 'Nissan', 'key' => 'test_store_to_mongo', 'url' => 'http://carbon.brighterplanet.com/automobiles.json?make=Nissan' }
     answer = { 'emission' => '29102' }
     execution_id = nil
     assert !::BrighterPlanet::Billing.config.slow_is_ok?
-    5.times {
+    2.times {
       ::BrighterPlanet::Billing.emission_estimate_service.queries.start do |query|
         query.key = params['key']
         query.input_params = params
@@ -103,10 +103,10 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
         query.output_params = answer
         execution_id = query.execution_id
       end
-      sleep 0.25
+      sleep 1
       assert_nil ::BrighterPlanet::Billing.emission_estimate_service.queries.find_by_execution_id(execution_id)
       ::BrighterPlanet::Billing.synchronize
-      sleep 0.25
+      sleep 1
       stored_query = ::BrighterPlanet::Billing.emission_estimate_service.queries.find_by_execution_id execution_id
       assert_equal 'emission_estimate_service', stored_query.service
       assert_equal answer['emission'], stored_query.output_params['emission']

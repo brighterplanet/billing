@@ -5,7 +5,7 @@ module BrighterPlanet
     class FastDatabase
       include ::Singleton
       def synchronized?
-        Billable.untried.zero?
+        Billable.untried.count.zero?
       end
       def put(execution_id, hsh)
         billable = Billable.find_or_create_by_execution_id execution_id
@@ -25,11 +25,10 @@ module BrighterPlanet
       class Billable < ::ActiveRecord::Base
         set_table_name 'brighter_planet_billing_billables'
         serialize :content
-        scope :untried, where('failed IS NULL or failed = 0')
         class << self
           def create_table
-            unless connection.table_exists?('brighter_planet_billing_billables')
-              connection.create_table 'brighter_planet_billing_billables' do |t|
+            unless connection.table_exists?(table_name)
+              connection.create_table table_name do |t|
                 t.string :execution_id
                 t.text :content
                 t.boolean :failed, :default => false
@@ -38,6 +37,11 @@ module BrighterPlanet
               reset_column_information
             end
           end
+        end
+        if ::ActiveRecord::VERSION::MAJOR == 3
+          scope :untried, where(:failed => false)
+        else
+          named_scope :untried, :conditions => { :failed => false }
         end
       end
     end

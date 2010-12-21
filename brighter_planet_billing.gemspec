@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   
   s.add_development_dependency 'test-unit'
-  s.add_development_dependency 'ruby-debug'
+  # s.add_development_dependency 'ruby-debug'
   s.add_development_dependency 'sqlite3-ruby'
   s.add_dependency 'i18n'
   s.add_dependency 'blockenspiel'
