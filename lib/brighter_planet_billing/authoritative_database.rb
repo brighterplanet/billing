@@ -27,6 +27,7 @@ module BrighterPlanet
         collection.find_one 'execution_id' => execution_id
       end
       def put(execution_id, hsh)
+        hsh ||= {}
         hsh['execution_id'] = execution_id
         collection.update({ 'execution_id' => execution_id }, hsh, :upsert => true )
       end
