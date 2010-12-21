@@ -39,6 +39,7 @@ module BrighterPlanet
           end
         end
         if ::ActiveRecord::VERSION::MAJOR == 3
+          create_table
           scope :untried, where(:failed => false)
         else
           named_scope :untried, :conditions => { :failed => false }
