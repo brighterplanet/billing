@@ -7,6 +7,9 @@ module BrighterPlanet
       def count
         collection.count
       end
+      def count_by_month(year, month)
+        collection.find({"year" => year, "month" => month}).count
+      end
       def conditions(key, year, month)
         if year and month
           { 'key' => key, 'year' => year.to_i, 'month' => month.to_i }

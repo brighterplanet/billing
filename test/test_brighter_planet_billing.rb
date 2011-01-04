@@ -11,6 +11,13 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     assert(::BrighterPlanet::Billing.emission_estimate_service.queries.count > 1_000)
   end
   
+  def test_count_by_month
+    december = ::BrighterPlanet::Billing.emission_estimate_service.queries.count_by_month(2010, 12)
+    all_time = ::BrighterPlanet::Billing.emission_estimate_service.queries.count
+    assert(december > 1_000)
+    assert(all_time > december)
+  end
+  
   def test_zzz_key_yields_queries
     key = ::BrighterPlanet::Billing.emission_estimate_service.keys.find_by_key '17a0c34541c953b5430adf8e2a1f50fb'
     catch :found_it do

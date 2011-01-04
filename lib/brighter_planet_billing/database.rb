@@ -18,6 +18,9 @@ module BrighterPlanet
       def count
         Billing.authoritative_database.count
       end
+      def count_by_month(year, month)
+        Billing.authoritative_database.count_by_month year, month
+      end
     end
   end
 end
