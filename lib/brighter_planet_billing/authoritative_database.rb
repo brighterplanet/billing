@@ -16,6 +16,11 @@ module BrighterPlanet
       def count_by_key(key)
         collection.find({"key" => key}).count
       end
+      def each_key(&blk)
+        collection.distinct("key").each do |hsh|
+          yield hsh
+        end
+      end
       def conditions(key, year, month)
         if year and month
           { 'key' => key, 'year' => year.to_i, 'month' => month.to_i }

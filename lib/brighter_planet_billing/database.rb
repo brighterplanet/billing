@@ -9,6 +9,9 @@ module BrighterPlanet
           Billing.fast_database.put execution_id, hsh
         end
       end
+      def each_key(&blk)
+        Billing.authoritative_database.each_key &blk
+      end
       def find_by_execution_id(execution_id)
         Billing.authoritative_database.find_by_execution_id execution_id
       end

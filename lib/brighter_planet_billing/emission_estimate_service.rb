@@ -16,6 +16,13 @@ module BrighterPlanet
           def find_by_key(key)
             new key
           end
+          def all
+            ary = []
+            Billing.database.each_key do |key|
+              ary << new(key.to_s)
+            end
+            ary
+          end
         end
         attr_reader :key
         def initialize(key)

@@ -6,6 +6,11 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     ::BrighterPlanet::Billing.config.slow_is_ok = false
     ::BrighterPlanet::Billing.config.disable_hoptoad = false
   end
+
+  def test_keys
+    keys = ::BrighterPlanet::Billing.emission_estimate_service.keys.all
+    assert keys.map(&:key).include?('17a0c34541c953b5430adf8e2a1f50fb')
+  end
   
   def test_count
     assert(::BrighterPlanet::Billing.emission_estimate_service.queries.count > 1_000)
