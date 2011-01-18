@@ -46,6 +46,9 @@ module BrighterPlanet
           def count_by_emitter_common_name(emitter_common_name)
             Billing.database.count_by_emitter_common_name emitter_common_name
           end
+          def count_by_key(key)
+            Billing.database.count_by_key key
+          end
           def count_by_month(year, month)
             Billing.database.count_by_month year, month
           end

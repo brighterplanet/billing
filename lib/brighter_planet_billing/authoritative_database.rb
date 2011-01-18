@@ -13,6 +13,9 @@ module BrighterPlanet
       def count_by_emitter_common_name(emitter_common_name)
         collection.find({"emitter_common_name" => emitter_common_name}).count
       end
+      def count_by_key(key)
+        collection.find({"key" => key}).count
+      end
       def conditions(key, year, month)
         if year and month
           { 'key' => key, 'year' => year.to_i, 'month' => month.to_i }

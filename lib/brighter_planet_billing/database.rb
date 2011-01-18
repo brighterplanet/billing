@@ -24,6 +24,9 @@ module BrighterPlanet
       def count_by_emitter_common_name(emitter_common_name)
         Billing.authoritative_database.count_by_emitter_common_name emitter_common_name
       end
+      def count_by_key(key)
+        Billing.authoritative_database.count_by_key key
+      end
     end
   end
 end
