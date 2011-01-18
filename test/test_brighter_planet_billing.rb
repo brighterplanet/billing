@@ -10,7 +10,12 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
   def test_count
     assert(::BrighterPlanet::Billing.emission_estimate_service.queries.count > 1_000)
   end
-  
+
+  def test_count_by_emitter_common_name
+    flight_query_count = ::BrighterPlanet::Billing.emission_estimate_service.queries.count_by_emitter_common_name('flight')
+    assert(flight_query_count > 1_000)
+  end
+
   def test_count_by_month
     december = ::BrighterPlanet::Billing.emission_estimate_service.queries.count_by_month(2010, 12)
     all_time = ::BrighterPlanet::Billing.emission_estimate_service.queries.count
