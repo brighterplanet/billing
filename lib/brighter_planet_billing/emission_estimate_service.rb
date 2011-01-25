@@ -74,6 +74,7 @@ module BrighterPlanet
         attr_accessor :year
         attr_accessor :month
         attr_accessor :service
+        attr_accessor :certified
         attr_accessor :key
         attr_accessor :input_params
         attr_accessor :url
@@ -106,6 +107,7 @@ module BrighterPlanet
           year
           month
           service
+          certified
           key
           input_params
           url

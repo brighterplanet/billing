@@ -83,6 +83,7 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     execution_id = nil
     2.times {
       ::BrighterPlanet::Billing.emission_estimate_service.queries.start do |query|
+        query.certified = true
         query.key = params['key']
         query.input_params = params
         query.url = params['url']
@@ -111,6 +112,7 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     assert !::BrighterPlanet::Billing.config.slow_is_ok?
     2.times {
       ::BrighterPlanet::Billing.emission_estimate_service.queries.start do |query|
+        query.certified = false
         query.key = params['key']
         query.input_params = params
         query.url = params['url']
