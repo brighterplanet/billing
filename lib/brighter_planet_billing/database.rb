@@ -15,6 +15,7 @@ module BrighterPlanet
       def find_by_execution_id(execution_id)
         Billing.authoritative_database.find_by_execution_id execution_id
       end
+      # should be "each query" or smth
       def each_by_key(key, year = nil, month = nil, &blk)
         Billing.authoritative_database.each_by_key key, year, month, &blk
       end
