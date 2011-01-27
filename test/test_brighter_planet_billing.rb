@@ -21,6 +21,11 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     assert(key_query_count > 1_000)
   end
 
+  def test_count_by_blank_key
+    key_query_count = ::BrighterPlanet::Billing.emission_estimate_service.queries.count_by_key(nil)
+    assert(key_query_count > 1_000)
+  end
+
   def test_count_by_emitter_common_name
     flight_query_count = ::BrighterPlanet::Billing.emission_estimate_service.queries.count_by_emitter_common_name('flight')
     assert(flight_query_count > 1_000)
