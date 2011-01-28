@@ -3,6 +3,11 @@ module BrighterPlanet
     class Config
       include ::Singleton
 
+      attr_writer :allowed_exceptions
+      def allowed_exceptions
+        @allowed_exceptions ||= []
+      end
+      
       attr_writer :mongo_host
       def mongo_host
         @mongo_host || ::ENV['BRIGHTER_PLANET_BILLING_MONGO_HOST']

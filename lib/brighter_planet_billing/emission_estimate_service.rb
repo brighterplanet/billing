@@ -145,7 +145,7 @@ module BrighterPlanet
           self.realtime = ::Benchmark.realtime { blk.call }
           self.succeeded = true
         rescue ::Exception => exception
-          if Billing.config.disable_hoptoad
+          if Billing.config.disable_hoptoad or Billing.config.allowed_exceptions.any? { |exception_class| exception.is_a? exception_class }
             raise exception
           else
             # provide some things that hoptoad usually pulls from the controller or request

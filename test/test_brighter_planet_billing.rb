@@ -158,4 +158,14 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
       end
     end
   end
+  
+  def test_allows_certain_errors_through
+    require 'leap'
+    ::BrighterPlanet::Billing.config.allowed_exceptions.push ::Leap::NoSolutionError
+    assert_raises(::Leap::NoSolutionError) do
+      ::BrighterPlanet::Billing.emission_estimate_service.queries.start do |query|
+        query.execute { raise ::Leap::NoSolutionError }
+      end
+    end
+  end
 end
