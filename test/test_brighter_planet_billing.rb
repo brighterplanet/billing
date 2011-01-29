@@ -166,4 +166,12 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
       assert_equal ::String, query.execution_id.class
     end
   end
+  
+  def test_really_runs_block
+    $test_really_runs_block_ran = false
+    ::BrighterPlanet::Billing.emission_estimate_service.queries.execute do |query|
+      $test_really_runs_block_ran = true
+    end
+    assert $test_really_runs_block_ran
+  end
 end
