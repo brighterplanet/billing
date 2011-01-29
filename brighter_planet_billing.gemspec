@@ -28,7 +28,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'sqlite3-ruby'
   s.add_development_dependency 'leap'
   s.add_dependency 'i18n'
-  s.add_dependency 'blockenspiel'
   s.add_dependency 'hoptoad_notifier', '~> 2.3.0'
   s.add_dependency 'builder'
   s.add_dependency 'mongo'

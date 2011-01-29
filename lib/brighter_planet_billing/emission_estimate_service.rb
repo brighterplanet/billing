@@ -1,5 +1,4 @@
 require 'benchmark'
-require 'blockenspiel'
 
 module BrighterPlanet
   module Billing
@@ -36,10 +35,9 @@ module BrighterPlanet
       end
       class Query
         class << self
-          def start(&blk)
+          def execute(&blk)
             query = new
-            ::Blockenspiel.invoke blk, query
-            raise "You need to call #execute inside of the start {} block!" if Billing.config.debug? and not query.executed?
+            query.execute &blk
             query.save
           end
           def find_by_execution_id(execution_id)
@@ -129,12 +127,7 @@ module BrighterPlanet
           end.join(',')
         end
 
-        def executed?
-          !!execution_id
-        end
-
         def execute(&blk)
-          raise "You can only call #execute once inside of the start {} block!" if Billing.config.debug? and query.executed?
           self.execution_id = Billing.generate_execution_id
           now = ::Time.now
           self.year = now.year
@@ -142,7 +135,7 @@ module BrighterPlanet
           self.started_at = now
           self.hoptoad_response = nil
           self.succeeded = false
-          self.realtime = ::Benchmark.realtime { blk.call }
+          self.realtime = ::Benchmark.realtime { yield self }
           self.succeeded = true
         rescue ::Exception => exception
           if Billing.config.disable_hoptoad or Billing.config.allowed_exceptions.any? { |exception_class| exception.is_a? exception_class }

@@ -17,7 +17,8 @@ module BrighterPlanet
           begin
             Billing.authoritative_database.put billable.execution_id, billable.content
             billable.destroy
-          rescue
+          rescue ::Exception => exception
+            $stderr.puts exception.inspect
             billable.update_attributes! :failed => true
           end
         end
@@ -39,7 +40,9 @@ module BrighterPlanet
           end
         end
         if ::ActiveRecord::VERSION::MAJOR == 3
-          scope :untried, where('failed IS NULL OR failed = 0')
+          def self.untried
+            where arel_table[:failed].not_eq(true)
+          end
         else
           named_scope :untried, :conditions => { :failed => false }
         end
