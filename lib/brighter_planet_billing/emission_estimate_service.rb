@@ -75,7 +75,6 @@ module BrighterPlanet
         end
         attr_accessor :year
         attr_accessor :month
-        attr_accessor :service
         attr_accessor :certified
         attr_accessor :key
         attr_accessor :input_params
@@ -91,7 +90,7 @@ module BrighterPlanet
         attr_accessor :succeeded
         attr_accessor :realtime
         def initialize
-          @service = 'emission_estimate_service'
+          @service = 'EmissionEstimateService'
         end
 
         # fixme
@@ -99,10 +98,21 @@ module BrighterPlanet
           @emitter_common_name = emitter.underscore
         end
         
+        # fixme
         def emitter
           @emitter_common_name.camelcase
         end
 
+        # fixme
+        def service=(service)
+          @service = service.underscore
+        end
+        
+        # fixme
+        def service
+          @service.camelcase
+        end
+        
         def save
           Billing.database.put execution_id, to_hash
         end
@@ -122,7 +132,7 @@ module BrighterPlanet
           key
           input_params
           url
-          emitter_common_name
+          emitter
           remote_ip
           referer
           output_params

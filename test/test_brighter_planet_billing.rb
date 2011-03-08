@@ -112,7 +112,7 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     end
     sleep 1
     stored_query = ::BrighterPlanet::Billing.emission_estimate_service.queries.find_by_execution_id execution_id
-    assert_equal 'emission_estimate_service', stored_query.service
+    assert_equal 'EmissionEstimateService', stored_query.service
     assert_equal true, stored_query.certified
     assert_equal 'Automobile', stored_query.emitter
     assert_equal answer['emission'], stored_query.output_params['emission']
@@ -143,7 +143,7 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     ::BrighterPlanet::Billing.synchronize
     sleep 1
     stored_query = ::BrighterPlanet::Billing.emission_estimate_service.queries.find_by_execution_id execution_id
-    assert_equal 'emission_estimate_service', stored_query.service
+    assert_equal 'EmissionEstimateService', stored_query.service
     assert_equal false, stored_query.certified
     assert_equal 'Automobile', stored_query.emitter
     assert_equal answer['emission'], stored_query.output_params['emission']
