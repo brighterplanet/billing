@@ -48,8 +48,12 @@ module BrighterPlanet
           def count
             Billing.database.count
           end
+          def count_by_emitter(emitter)
+            Billing.database.count_by_emitter emitter
+          end
+          # deprecated
           def count_by_emitter_common_name(emitter_common_name)
-            Billing.database.count_by_emitter_common_name emitter_common_name
+            Billing.database.count_by_emitter emitter_common_name.camelcase
           end
           def count_by_key(key)
             Billing.database.count_by_key key
@@ -88,6 +92,15 @@ module BrighterPlanet
         attr_accessor :realtime
         def initialize
           @service = 'emission_estimate_service'
+        end
+
+        # fixme
+        def emitter=(emitter)
+          @emitter_common_name = emitter.underscore
+        end
+        
+        def emitter
+          @emitter_common_name.camelcase
         end
 
         def save

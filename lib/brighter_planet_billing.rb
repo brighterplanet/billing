@@ -3,6 +3,7 @@ require 'active_support'
 require 'active_support/version'
 if ::ActiveSupport::VERSION::MAJOR == 3
   require 'active_support/core_ext/object/blank'
+  require 'active_support/core_ext/string/inflections'
   require 'active_support/json'
   require 'active_support/secure_random'
 end

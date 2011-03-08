@@ -8,10 +8,11 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     ::BrighterPlanet::Billing.config.allowed_exceptions.clear
   end
 
-  def test_keys
-    keys = ::BrighterPlanet::Billing.emission_estimate_service.keys.all
-    assert keys.map(&:key).include?('17a0c34541c953b5430adf8e2a1f50fb')
-  end
+  # sabshere 3/8/11 this is super slow
+  # def test_keys
+  #   keys = ::BrighterPlanet::Billing.emission_estimate_service.keys.all
+  #   assert keys.map(&:key).include?('17a0c34541c953b5430adf8e2a1f50fb')
+  # end
   
   def test_count
     assert(::BrighterPlanet::Billing.emission_estimate_service.queries.count > 1_000)
@@ -27,8 +28,14 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     assert(key_query_count > 1_000)
   end
   
+  # deprecated
   def test_count_by_emitter_common_name
     flight_query_count = ::BrighterPlanet::Billing.emission_estimate_service.queries.count_by_emitter_common_name('flight')
+    assert(flight_query_count > 1_000)
+  end
+  
+  def test_count_by_emitter
+    flight_query_count = ::BrighterPlanet::Billing.emission_estimate_service.queries.count_by_emitter('Flight')
     assert(flight_query_count > 1_000)
   end
   
@@ -92,7 +99,9 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
       query.key = params['key']
       query.input_params = params
       query.url = params['url']
+      # deprecated
       query.emitter_common_name = 'automobile'
+      query.emitter = 'Automobile'
       if params['key'] and params['url']
         query.remote_ip = params['remote_ip']
         query.referer = params['referer']
@@ -104,6 +113,8 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     sleep 1
     stored_query = ::BrighterPlanet::Billing.emission_estimate_service.queries.find_by_execution_id execution_id
     assert_equal 'emission_estimate_service', stored_query.service
+    assert_equal true, stored_query.certified
+    assert_equal 'Automobile', stored_query.emitter
     assert_equal answer['emission'], stored_query.output_params['emission']
   end
 
@@ -117,7 +128,9 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
       query.key = params['key']
       query.input_params = params
       query.url = params['url']
+      # deprecated
       query.emitter_common_name = 'automobile'
+      query.emitter = 'Automobile'
       if params['key'] and params['url']
         query.remote_ip = params['remote_ip']
         query.referer = params['referer']
@@ -131,6 +144,8 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     sleep 1
     stored_query = ::BrighterPlanet::Billing.emission_estimate_service.queries.find_by_execution_id execution_id
     assert_equal 'emission_estimate_service', stored_query.service
+    assert_equal false, stored_query.certified
+    assert_equal 'Automobile', stored_query.emitter
     assert_equal answer['emission'], stored_query.output_params['emission']
   end
   

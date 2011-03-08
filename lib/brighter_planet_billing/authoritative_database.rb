@@ -10,8 +10,9 @@ module BrighterPlanet
       def count_by_month(year, month)
         collection.find({"year" => year, "month" => month}).count
       end
-      def count_by_emitter_common_name(emitter_common_name)
-        collection.find({"emitter_common_name" => emitter_common_name}).count
+      # todo: convert to camelcase internally
+      def count_by_emitter(emitter)
+        collection.find({"emitter_common_name" => emitter.underscore}).count
       end
       def count_by_key(key)
         collection.find({"key" => key}).count
