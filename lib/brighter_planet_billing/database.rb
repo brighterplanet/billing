@@ -6,7 +6,7 @@ module BrighterPlanet
         if Billing.config.slow_is_ok?
           Billing.authoritative_database.put execution_id, hsh
         else
-          Billing.fast_database.put execution_id, hsh
+          Billing.cache.put execution_id, hsh
         end
       end
       def each_key(&blk)

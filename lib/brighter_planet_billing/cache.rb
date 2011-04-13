@@ -2,7 +2,7 @@ require 'active_record'
 
 module BrighterPlanet
   module Billing
-    class FastDatabase
+    class Cache
       include ::Singleton
       def synchronized?
         Billable.untried.count.zero?
