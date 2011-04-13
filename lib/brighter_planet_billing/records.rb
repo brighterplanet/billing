@@ -1,6 +1,6 @@
 module BrighterPlanet
   module Billing
-    class Database
+    class Records
       include ::Singleton
       def put(execution_id, hsh)
         if Billing.config.slow_is_ok?

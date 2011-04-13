@@ -11,7 +11,7 @@ end
 module BrighterPlanet
   module Billing
     autoload :Config, 'brighter_planet_billing/config'
-    autoload :Database, 'brighter_planet_billing/database'
+    autoload :Records, 'brighter_planet_billing/records'
     autoload :Cache, 'brighter_planet_billing/cache'
     autoload :AuthoritativeStore, 'brighter_planet_billing/authoritative_store'
     autoload :EmissionEstimateService, 'brighter_planet_billing/emission_estimate_service'
@@ -21,8 +21,8 @@ module BrighterPlanet
     def self.config
       Config.instance
     end
-    def self.database
-      Database.instance
+    def self.records
+      Records.instance
     end
     def self.cache
       Cache.instance

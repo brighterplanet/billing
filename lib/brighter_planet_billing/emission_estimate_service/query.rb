@@ -10,34 +10,34 @@ module BrighterPlanet
             query.execute &blk
             query.save
           end
-          
+
           def find_by_execution_id(execution_id)
-            if hsh = Billing.database.find_by_execution_id(execution_id)
+            if hsh = Billing.records.find_by_execution_id(execution_id)
               from_hash hsh
             end
           end
-          
+
           def count
-            Billing.database.count
+            Billing.records.count
           end
-          
+
           def count_by_emitter(emitter)
-            Billing.database.count_by_emitter emitter
+            Billing.records.count_by_emitter emitter
           end
-          
+
           # deprecated
           def count_by_emitter_common_name(emitter_common_name)
-            Billing.database.count_by_emitter emitter_common_name.camelcase
+            Billing.records.count_by_emitter emitter_common_name.camelcase
           end
-          
+
           def count_by_key(key)
-            Billing.database.count_by_key key
+            Billing.records.count_by_key key
           end
-          
+
           def count_by_month(year, month)
-            Billing.database.count_by_month year, month
+            Billing.records.count_by_month year, month
           end
-          
+
           def from_hash(hsh)
             query = new
             hsh.each do |k, v|
@@ -50,7 +50,7 @@ module BrighterPlanet
             query
           end
         end
-        
+
         attr_accessor :year
         attr_accessor :month
         attr_accessor :certified
@@ -76,7 +76,7 @@ module BrighterPlanet
         def emitter=(emitter)
           @emitter_common_name = emitter.underscore
         end
-        
+
         # fixme
         def emitter
           @emitter_common_name.camelcase
@@ -86,14 +86,14 @@ module BrighterPlanet
         def service=(service)
           @service = service.underscore
         end
-        
+
         # fixme
         def service
           @service.camelcase
         end
-        
+
         def save
-          Billing.database.put execution_id, to_hash
+          Billing.records.put execution_id, to_hash
         end
 
         def to_hash
@@ -102,7 +102,7 @@ module BrighterPlanet
             memo
           end
         end
-        
+
         CSV_HEADERS = %w{
           year
           month
@@ -159,7 +159,7 @@ module BrighterPlanet
           self.emitter_common_name = emitter_common_name
           self.stopped_at = ::Time.now
           save
-        end        
+        end
       end
     end
   end

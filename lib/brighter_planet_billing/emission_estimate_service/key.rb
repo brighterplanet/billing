@@ -8,7 +8,7 @@ module BrighterPlanet
           end
           def all
             ary = []
-            Billing.database.each_key do |key|
+            Billing.records.each_key do |key|
               ary << new(key.to_s)
             end
             ary
@@ -22,7 +22,7 @@ module BrighterPlanet
         end
         
         def each_query(year = nil, month = nil, &blk)
-          Billing.database.each_by_key(key, year, month) do |hsh|
+          Billing.records.each_by_key(key, year, month) do |hsh|
             yield Query.from_hash(hsh)
           end
         end
