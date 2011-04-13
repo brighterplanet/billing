@@ -1,13 +1,6 @@
 require 'helper'
 
 class TestBrighterPlanetBilling < Test::Unit::TestCase
-  def setup
-    ::BrighterPlanet::Billing.setup
-    ::BrighterPlanet::Billing.config.slow_is_ok = false
-    ::BrighterPlanet::Billing.config.disable_hoptoad = false
-    ::BrighterPlanet::Billing.config.allowed_exceptions.clear
-  end
-
   # sabshere 3/8/11 this is super slow
   # def test_000_keys
   #   keys = ::BrighterPlanet::Billing.emission_estimate_service.keys.all

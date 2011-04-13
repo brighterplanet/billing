@@ -17,4 +17,10 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'brighter_planet_billing'
 ::BrighterPlanet::Billing::Cache::Billable.create_table
 class Test::Unit::TestCase
+  def setup
+    ::BrighterPlanet::Billing.setup
+    ::BrighterPlanet::Billing.config.slow_is_ok = false
+    ::BrighterPlanet::Billing.config.disable_hoptoad = false
+    ::BrighterPlanet::Billing.config.allowed_exceptions.clear
+  end
 end
