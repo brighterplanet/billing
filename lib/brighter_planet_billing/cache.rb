@@ -15,7 +15,7 @@ module BrighterPlanet
         until synchronized?
           billable = Billable.untried.first
           begin
-            Billing.authoritative_database.put billable.execution_id, billable.content
+            Billing.authoritative_store.put billable.execution_id, billable.content
             billable.destroy
           rescue ::Exception => exception
             $stderr.puts exception.inspect

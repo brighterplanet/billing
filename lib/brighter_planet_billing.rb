@@ -13,7 +13,7 @@ module BrighterPlanet
     autoload :Config, 'brighter_planet_billing/config'
     autoload :Database, 'brighter_planet_billing/database'
     autoload :Cache, 'brighter_planet_billing/cache'
-    autoload :AuthoritativeDatabase, 'brighter_planet_billing/authoritative_database'
+    autoload :AuthoritativeStore, 'brighter_planet_billing/authoritative_store'
     autoload :EmissionEstimateService, 'brighter_planet_billing/emission_estimate_service'
     
     class ReportedExceptionToHoptoad < RuntimeError; end
@@ -27,8 +27,8 @@ module BrighterPlanet
     def self.cache
       Cache.instance
     end
-    def self.authoritative_database
-      AuthoritativeDatabase.instance
+    def self.authoritative_store
+      AuthoritativeStore.instance
     end
     def self.emission_estimate_service
       EmissionEstimateService.instance

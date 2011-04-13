@@ -2,7 +2,7 @@ require 'mongo'
 
 module BrighterPlanet
   module Billing
-    class AuthoritativeDatabase
+    class AuthoritativeStore
       include ::Singleton
       def count
         collection.count
