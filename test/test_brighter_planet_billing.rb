@@ -140,11 +140,12 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
   end
   
   def test_017_really_runs_block
-    $test_really_runs_block_ran = false
-    ::BrighterPlanet::Billing.emission_estimate_service.queries.execute do |query|
-      $test_really_runs_block_ran = true
+    confirmation = catch :i_ran do
+      ::BrighterPlanet::Billing.emission_estimate_service.queries.execute do |query|
+        throw :i_ran, :yes_i_did
+      end
     end
-    assert $test_really_runs_block_ran
+    assert_equal :yes_i_did, confirmation
   end
   
   def test_999_key_yields_queries
