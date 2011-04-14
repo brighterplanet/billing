@@ -1,74 +1,71 @@
 require 'mongo'
 
+# TODO: add all indexes
+
 module BrighterPlanet
-  module Billing
+  class Billing
+    # An offsite mongo store.
     class AuthoritativeStore
+      
       include ::Singleton
-      def count
-        collection.count
-      end
-      def count_by_month(year, month)
-        collection.find({"year" => year, "month" => month}).count
-      end
-      # todo: convert to camelcase internally
-      def count_by_emitter(emitter)
-        collection.find({"emitter_common_name" => emitter.underscore}).count
-      end
-      def count_by_key(key)
-        collection.find({"key" => key}).count
-      end
-      def each_key(&blk)
-        collection.distinct("key").each do |hsh|
-          yield hsh
-        end
-      end
-      def conditions(key, year, month)
-        if year and month
-          { 'key' => key, 'year' => year.to_i, 'month' => month.to_i }
-        elsif not year and not month
-          { 'key' => key }
+      
+      delegate :find, :to => :collection
+      delegate :find_one, :to => :collection
+      delegate :distinct, :to => :collection
+      delegate :update, :to => :collection
+      
+      # don't just delegate because counting with a spec requires a find in the middle
+      def count(*args)
+        spec, opts = args
+        if spec
+          collection.find(spec, (opts || {})).count
         else
-          raise "don't know how to deal with (#{key}, #{year}, #{month})"
+          collection.count
         end
       end
-      def each_by_key(key, year = nil, month = nil, &blk)
-        collection.find conditions(key, year, month) do |cursor|
-          cursor.each do |doc|
-            yield doc
-          end
-        end
+      
+      def upsert(execution_id, doc)
+        doc ||= {}
+        doc['execution_id'] = execution_id
+        update({ 'execution_id' => execution_id }, doc, :upsert => true )
       end
-      def find_by_execution_id(execution_id)
-        collection.find_one 'execution_id' => execution_id
+      
+      # _id_  _id
+      # execution_id_1  execution_id    Delete_24px
+      # year, month_1   year, month   false   Delete_24px
+      # year_1  year  false   Delete_24px
+      # month_1   month   false   Delete_24px
+      # emitter_common_name_1   emitter_common_name   false   Delete_24px
+      # key_1   key   false 
+      INDEXES = [
+        # [['execution_id', ::Mongo::ASCENDING]],
+        [['emitter', ::Mongo::ASCENDING]],
+        # [['service', ::Mongo::ASCENDING], ['year', ::Mongo::ASCENDING], ['month', ::Mongo::ASCENDING]]
+      ]
+      def create_indexes
+        INDEXES.each { |index| collection.create_index index, :unique => false }
+      rescue ::Mongo::OperationFailure
+        # ignore, maybe a background process is running
       end
-      def put(execution_id, hsh)
-        hsh ||= {}
-        hsh['execution_id'] = execution_id
-        collection.update({ 'execution_id' => execution_id }, hsh, :upsert => true )
-      end
+
+      private
+
       def connection
-        @connection ||= ::Mongo::Connection.new ::BrighterPlanet::Billing.config.mongo_host, ::BrighterPlanet::Billing.config.mongo_port
+        @connection ||= ::Mongo::Connection.new Billing.config.mongo_host, Billing.config.mongo_port
       end
+      
       def db
         return @db if @db.is_a? ::Mongo::DB
-        @db = connection.db ::BrighterPlanet::Billing.config.mongo_database
-        @db.authenticate ::BrighterPlanet::Billing.config.mongo_username, ::BrighterPlanet::Billing.config.mongo_password
+        @db = connection.db Billing.config.mongo_database
+        @db.authenticate Billing.config.mongo_username, Billing.config.mongo_password
         @db
       end
+      
       def collection
         return @collection if @collection.is_a? ::Mongo::Collection
         @collection = db.collection 'billables'
-        # @collection.ensure_index 'execution_id'
         @collection
       end
     end
   end
 end
-
-# if defined?(PhusionPassenger)
-#   PhusionPassenger.on_event(:starting_worker_process) do |forked|
-#     if forked
-#       # Create new connection here
-#     end
-#   end
-# end

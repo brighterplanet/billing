@@ -1,5 +1,5 @@
 module BrighterPlanet
-  module Billing
+  class Billing
     VERSION = "0.0.1"
   end
 end

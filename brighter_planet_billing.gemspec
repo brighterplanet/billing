@@ -20,16 +20,11 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   
   s.add_development_dependency 'test-unit'
-  if RUBY_VERSION >= '1.9'
-    s.add_development_dependency 'ruby-debug19'
-  else
-    s.add_development_dependency 'ruby-debug'
-  end
   s.add_development_dependency 'sqlite3-ruby'
   s.add_development_dependency 'leap'
+  s.add_development_dependency 'brighter_planet_metadata'
   s.add_dependency 'i18n'
   s.add_dependency 'hoptoad_notifier', '2.4.9'
-  s.add_dependency 'builder'
   s.add_dependency 'mongo'
   s.add_dependency 'bson'
   s.add_dependency 'bson_ext'

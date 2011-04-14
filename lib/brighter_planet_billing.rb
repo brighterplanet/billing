@@ -2,51 +2,68 @@ require 'singleton'
 require 'active_support'
 require 'active_support/version'
 if ::ActiveSupport::VERSION::MAJOR == 3
-  require 'active_support/core_ext/object/blank'
+  require 'active_support/core_ext/module/delegation'
+  require 'active_support/core_ext/object'
+  require 'active_support/core_ext/hash'
   require 'active_support/core_ext/string/inflections'
   require 'active_support/json'
   require 'active_support/secure_random'
 end
 
 module BrighterPlanet
-  module Billing
+  class Billing
     autoload :Config, 'brighter_planet_billing/config'
-    autoload :Records, 'brighter_planet_billing/records'
+    autoload :Documents, 'brighter_planet_billing/documents'
     autoload :Cache, 'brighter_planet_billing/cache'
     autoload :AuthoritativeStore, 'brighter_planet_billing/authoritative_store'
-    autoload :EmissionEstimateService, 'brighter_planet_billing/emission_estimate_service'
+    autoload :Key, 'brighter_planet_billing/key'
+    autoload :Query, 'brighter_planet_billing/query'
+    
+    include ::Singleton
     
     class ReportedExceptionToHoptoad < RuntimeError; end
     
     def self.config
       Config.instance
     end
-    def self.records
-      Records.instance
+    
+    def self.documents
+      Documents.instance
     end
+    
     def self.cache
       Cache.instance
     end
+    
     def self.authoritative_store
       AuthoritativeStore.instance
     end
-    def self.emission_estimate_service
-      EmissionEstimateService.instance
+    
+    def self.keys
+      Key
     end
+    
+    def self.queries
+      Query
+    end
+    
     def self.setup
-      Cache::Billable.create_table
+      Cache::Document.create_table
       ::HoptoadNotifier.configure do |hoptoad_config|
         unless hoptoad_config.ignore.include? ::BrighterPlanet::Billing::ReportedExceptionToHoptoad
           hoptoad_config.ignore.push ::BrighterPlanet::Billing::ReportedExceptionToHoptoad
         end
       end
     end
+    
     def self.generate_execution_id
       ::ActiveSupport::SecureRandom.hex 40
     end
+    
     def self.synchronized?
       cache.synchronized?
     end
+    
     def self.synchronize
       cache.synchronize
     end

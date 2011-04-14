@@ -2,9 +2,8 @@ require 'rubygems'
 require 'bundler'
 Bundler.setup
 require 'test/unit'
-require 'active_support/all'
+# require 'active_support/all'
 require 'active_record'
-require 'ruby-debug'
 # thanks authlogic!
 ActiveRecord::Schema.verbose = false
 begin
@@ -15,11 +14,11 @@ end
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'brighter_planet_billing'
-::BrighterPlanet::Billing::Cache::Billable.create_table
+::BrighterPlanet::Billing::Cache::Document.create_table
 class Test::Unit::TestCase
   def setup
     ::BrighterPlanet::Billing.setup
-    ::BrighterPlanet::Billing.config.slow_is_ok = false
+    ::BrighterPlanet::Billing.config.disable_caching = false
     ::BrighterPlanet::Billing.config.disable_hoptoad = false
     ::BrighterPlanet::Billing.config.allowed_exceptions.clear
   end

@@ -1,6 +1,7 @@
 module BrighterPlanet
-  module Billing
+  class Billing
     class Config
+
       include ::Singleton
 
       attr_writer :allowed_exceptions
@@ -33,9 +34,9 @@ module BrighterPlanet
         @mongo_password || ::ENV['BRIGHTER_PLANET_BILLING_MONGO_PASSWORD']
       end
       
-      attr_writer :slow_is_ok
-      def slow_is_ok
-        @slow_is_ok || (::ENV['BRIGHTER_PLANET_BILLING_SLOW_IS_OK'] == 'true')
+      attr_writer :disable_caching
+      def disable_caching
+        @disable_caching || (::ENV['BRIGHTER_PLANET_BILLING_DISABLE_CACHING'] == 'true')
       end
       
       attr_writer :debug
@@ -49,7 +50,7 @@ module BrighterPlanet
       end
       
       # prettier
-      alias :slow_is_ok? :slow_is_ok
+      alias :disable_caching? :disable_caching
       alias :debug? :debug
       alias :disable_hoptoad? :disable_hoptoad
     end
