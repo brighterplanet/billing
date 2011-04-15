@@ -1,20 +1,20 @@
 module BrighterPlanet
   class Billing
-    # API key found in billing documents.
+    # API key found in billing storage.
     class Key
       class << self
-        def find(spec, opts = {})
-          Billing.documents.find(spec, opts).map do |doc|
+        def find(selector, opts = {})
+          Billing.storage.find(selector, opts).map do |doc|
             new doc
           end
         end
         
-        def find_one(spec, opts = {})
-          find(spec, opts)[0]
+        def find_one(selector, opts = {})
+          find(selector, opts)[0]
         end
 
         def all
-          Billing.documents.distinct(:key).map do |key|
+          Billing.storage.distinct(:key).map do |key|
             new key.to_s
           end
         end
@@ -26,10 +26,11 @@ module BrighterPlanet
         @key = key
       end
       
-      def each_query
-        Billing.documents.find(:key => key) do |cursor|
+      def each_billable
+        raise "each service..."
+        Billing.storage.find(:key => key) do |cursor|
           cursor.each do |doc|
-            yield Query.new(doc)
+            yield Billable.new(doc)
           end
         end
       end

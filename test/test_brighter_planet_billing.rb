@@ -45,7 +45,7 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     params = { 'make' => 'Nissan', 'key' => 'test_store_to_mongo', 'url' => 'http://carbon.brighterplanet.com/automobiles.json?make=Nissan' }
     answer = { 'emission' => '49291' }
     execution_id = nil
-    ::BrighterPlanet::Billing.queries.execute do |query|
+    ::BrighterPlanet::Billing.queries.bill do |query|
       query.certified = true
       query.key = params['key']
       query.input_params = params
@@ -62,7 +62,7 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
       execution_id = query.execution_id
     end
     sleep 1
-    stored_query = ::BrighterPlanet::Billing.queries.find_one({:execution_id => execution_id}, :limit => 1)
+    stored_query = ::BrighterPlanet::Billing.queries.find_one(:execution_id => execution_id)
     assert_equal 'EmissionEstimateService', stored_query.service
     assert_equal true, stored_query.certified
     assert_equal 'Automobile', stored_query.emitter
@@ -74,7 +74,7 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     answer = { 'emission' => '29102' }
     execution_id = nil
     assert_false ::BrighterPlanet::Billing.config.disable_caching?
-    ::BrighterPlanet::Billing.queries.execute do |query|
+    ::BrighterPlanet::Billing.queries.bill do |query|
       query.certified = false
       query.key = params['key']
       query.input_params = params
@@ -90,10 +90,10 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
       query.output_params = answer
       execution_id = query.execution_id
     end
-    assert_nil ::BrighterPlanet::Billing.queries.find_one({:execution_id => execution_id}, :limit => 1)
+    assert_nil ::BrighterPlanet::Billing.queries.find_one(:execution_id => execution_id)
     ::BrighterPlanet::Billing.synchronize
     sleep 1
-    stored_query = ::BrighterPlanet::Billing.queries.find_one({:execution_id => execution_id}, :limit => 1)
+    stored_query = ::BrighterPlanet::Billing.queries.find_one(:execution_id => execution_id)
     assert_equal 'EmissionEstimateService', stored_query.service
     assert_equal false, stored_query.certified
     assert_equal 'Automobile', stored_query.emitter
@@ -102,7 +102,7 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
   
   def test_013_catches_errors_with_hoptoad
     assert_raises(::BrighterPlanet::Billing::ReportedExceptionToHoptoad) do
-      ::BrighterPlanet::Billing.queries.execute do |query|
+      ::BrighterPlanet::Billing.queries.bill do |query|
         raise StandardError
       end
     end
@@ -111,7 +111,7 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
   def test_014_catches_errors_without_hoptoad
     ::BrighterPlanet::Billing.config.disable_hoptoad = true
     assert_raises(StandardError) do
-      ::BrighterPlanet::Billing.queries.execute do |query|
+      ::BrighterPlanet::Billing.queries.bill do |query|
         raise StandardError
       end
     end
@@ -121,21 +121,21 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     require 'leap'
     ::BrighterPlanet::Billing.config.allowed_exceptions.push ::Leap::NoSolutionError
     assert_raises(::Leap::NoSolutionError) do
-      ::BrighterPlanet::Billing.queries.execute do |query|
+      ::BrighterPlanet::Billing.queries.bill do |query|
         raise ::Leap::NoSolutionError
       end
     end
   end
   
   def test_016_can_immediately_get_execution_id
-    ::BrighterPlanet::Billing.queries.execute do |query|
+    ::BrighterPlanet::Billing.queries.bill do |query|
       assert_equal ::String, query.execution_id.class
     end
   end
   
   def test_017_really_runs_block
     confirmation = catch :i_ran do
-      ::BrighterPlanet::Billing.queries.execute do |query|
+      ::BrighterPlanet::Billing.queries.bill do |query|
         throw :i_ran, :yes_i_did
       end
     end
@@ -179,16 +179,6 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
       ::BrighterPlanet::Billing.queries.find(:year => 2009, :month => 11, :key => '17a0c34541c953b5430adf8e2a1f50fb').each do |query|
         raise "uhh ohh, found something!"
       end
-    end
-  end
-  
-  def test_996_query_to_csv
-    ticks = 2
-    key = ::BrighterPlanet::Billing.keys.new '17a0c34541c953b5430adf8e2a1f50fb'
-    key.each_query do |query|
-      assert(query.to_csv.length > 0)
-      ticks -= 1
-      break if ticks < 0
     end
   end
 end

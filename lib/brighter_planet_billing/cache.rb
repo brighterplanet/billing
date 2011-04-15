@@ -10,16 +10,16 @@ module BrighterPlanet
         Document.untried.count.zero?
       end
       
-      def upsert(execution_id, doc)
+      def save_execution(service_name, execution_id, doc)
         document = Document.find_or_create_by_execution_id execution_id
-        document.update_attributes! :content => doc
+        document.update_attributes! :service_name => service_name.to_s, :content => doc
       end
       
       def synchronize
         until synchronized?
           document = Document.untried.first
           begin
-            Billing.authoritative_store.upsert document.execution_id, document.content
+            Billing.authoritative_store.save_execution document.service_name, document.execution_id, document.content
             document.destroy
           rescue ::Exception => exception
             $stderr.puts exception.inspect

@@ -10,13 +10,28 @@ module BrighterPlanet
       
         serialize :content
       
+        COLUMNS_HASH = {
+          :content => :text,
+          :service_name => :string,
+          :execution_id => :string,
+          :failed => :boolean,
+        }
+        COLUMN_OPTIONS = {
+          :failed => { :default => false }
+        }
         class << self
           def create_table
-            unless connection.table_exists?(table_name)
+            if connection.table_exists?(table_name)
+              COLUMNS_HASH.each do |k, v|
+                unless columns_hash[k.to_s].type == v
+                  raise ::RuntimeError, "[brighter_planet_billing] need to drop and recreate billing table"
+                end
+              end
+            else
               connection.create_table table_name do |t|
-                t.string :execution_id
-                t.text :content
-                t.boolean :failed, :default => false
+                COLUMNS_HASH.each do |k, v|
+                  t.send v, k, (COLUMN_OPTIONS[k] || {})
+                end
                 t.timestamps
               end
               reset_column_information
