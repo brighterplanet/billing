@@ -11,15 +11,17 @@ class TestEmissionEstimateService < Test::Unit::TestCase
   
   def test_001_sample_query_results
     bill_flight_query
-    flight_sample = BrighterPlanet::Billing.emission_estimate_service.queries.sample :emitter => 'Flight'
-    assert(flight_sample.mean(:emission) > 100)
-    assert(flight_sample.mean(:emission) < 801)
+    flight_sample = BrighterPlanet::Billing.emission_estimate_service.queries.sample({:emitter => 'Flight'})
+    
+    mean_emission = flight_sample.mean(:emission)
+    assert(mean_emission > 100)
+    assert(mean_emission < 801)
+    
+    variation_emission = flight_sample.variation(:emission)
+    assert(variation_emission > 1)
+    assert(variation_emission < 100)
   end
-  
-  def test_002_count_queries
-    assert(BrighterPlanet::Billing.emission_estimate_service.queries.count(:emitter => 'Flight') > 0)
-  end
-  
+    
   private
   
   def bill_flight_query

@@ -23,7 +23,7 @@ module BrighterPlanet
           def create_table
             if connection.table_exists?(table_name)
               COLUMNS_HASH.each do |k, v|
-                unless columns_hash[k.to_s].type == v
+                unless columns_hash[k.to_s].type == v.to_sym
                   raise ::RuntimeError, "[brighter_planet_billing] need to drop and recreate billing table"
                 end
               end

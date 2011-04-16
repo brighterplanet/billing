@@ -52,17 +52,22 @@ module BrighterPlanet
       # emitter_common_name_1   emitter_common_name   false   Delete_24px
       # key_1   key   false 
       INDEXES = {
-        :EmissionEstimateService => [
+        'EmissionEstimateService' => [
           # [['execution_id', ::Mongo::ASCENDING]],
-          [['emitter', ::Mongo::ASCENDING]],
+          # [['emitter', ::Mongo::ASCENDING]],
+          [ [['emitter', ::Mongo::ASCENDING], ['execution_id', ::Mongo::ASCENDING]], { :unique => false } ]
           # [['service', ::Mongo::ASCENDING], ['year', ::Mongo::ASCENDING], ['month', ::Mongo::ASCENDING]]
         ],
       }
       
       def create_indexes(service_name)
-        INDEXES[service_name.to_sym].each { |index| collection(service_name).create_index index, :unique => false }
+        service_name = service_name.to_s
+        INDEXES[service_name].each do |index, opts|
+          $stderr.puts "[brighter_planet_billing] Creating index (#{index.inspect}, #{opts.inspect}) on #{service_name}"
+          collection(service_name).create_index index, opts
+        end
       rescue ::Mongo::OperationFailure
-        # ignore, maybe a background process is running
+        $stderr.puts "[brighter_planet_billing] Failed to create index: #{$!.inspect}"
       end
 
       private
@@ -78,11 +83,17 @@ module BrighterPlanet
         @db
       end
       
+      # since EmissionEstimateService's collection is currently called billable, we have to have a mapping
+      ACTUAL_COLLECTION_NAMES = {
+        'EmissionEstimateService' => 'billables', # legacy, this will change to EmissionEstimateService soon
+        'ReferenceDataService' => 'ReferenceDataService',
+      }
+      
       def collection(service_name)
         service_name = service_name.to_s
         @collection ||= {}
         return @collection[service_name] if @collection[service_name].is_a? ::Mongo::Collection
-        @collection[service_name] = db.collection service_name
+        @collection[service_name] = db.collection ACTUAL_COLLECTION_NAMES[service_name]
       end
     end
   end
