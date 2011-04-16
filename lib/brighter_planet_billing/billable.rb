@@ -40,15 +40,17 @@ module BrighterPlanet
         # m = Code.new("function() { emit(this.user_id, 1); }")
         # r = Code.new("function(k,vals) { return 1; }")
         # res = @@test.map_reduce(m, r, :query => {"user_id" => {"$gt" => 1}}, :out => 'foo');
+        
+        # using execution_id as a random attribution
+        # thanks http://cookbook.mongodb.org/patterns/random-attribute/
+        # ('1'*40) corresponds to 1/16 or 6.25% sample
+        
+        SAMPLE_THRESHOLD = '1'*40
+        
         def sample(selector, opts = {})
-          # selector = selector.symbolize_keys.merge(:service => service.to_param)
-          # opts = opts.symbolize_keys
-          # m = ::Mongo::Code.new("function() { emit(this.user_id, 1); }")
-          # r = ::Mongo::Code.new("function(k,vals) { return 1; }")
-          # res = Billing.storage.map_reduce(m, r, :query => {"user_id" => {"$gt" => 1}});
-          # res.map do |doc|
-          #   Billable.new(doc)
-          # end
+          sample = Sample.new
+          stream(selector.merge(:execution_id => { '$lte' => SAMPLE_THRESHOLD }), opts) { |billable| sample.billables.push billable }
+          sample
         end
         
         def bill(&blk)

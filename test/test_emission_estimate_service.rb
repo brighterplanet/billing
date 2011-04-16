@@ -9,12 +9,12 @@ class TestEmissionEstimateService < Test::Unit::TestCase
     assert_equal query.certified, retrieved_query.certified
   end
   
-  # def test_001_sample_query_results
-  #   bill_flight_query
-  #   flight_sample = BrighterPlanet::Billing.emission_estimate_service.queries.sample :emitter => 'Flight'
-  #   assert(flight_sample.average(:emission) > 0)
-  #   assert(flight_sample.average(:emission) < 801)
-  # end
+  def test_001_sample_query_results
+    bill_flight_query
+    flight_sample = BrighterPlanet::Billing.emission_estimate_service.queries.sample :emitter => 'Flight'
+    assert(flight_sample.mean(:emission) > 100)
+    assert(flight_sample.mean(:emission) < 801)
+  end
   
   def test_002_count_queries
     assert(BrighterPlanet::Billing.emission_estimate_service.queries.count(:emitter => 'Flight') > 0)

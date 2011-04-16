@@ -18,6 +18,7 @@ module BrighterPlanet
     autoload :AuthoritativeStore, 'brighter_planet_billing/authoritative_store'
     autoload :Key, 'brighter_planet_billing/key'
     autoload :Billable, 'brighter_planet_billing/billable'
+    autoload :Sample, 'brighter_planet_billing/sample'
     
     # services
     autoload :EmissionEstimateService, 'brighter_planet_billing/emission_estimate_service'
