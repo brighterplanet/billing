@@ -15,11 +15,7 @@ module BrighterPlanet
         attr_accessor :color
         attr_accessor :cm1_git_version
         attr_accessor :emitter_git_version
-        
-        attr_writer :emission
-        def emission
-          @emission.try :to_f
-        end
+        attr_accessor :emission
         
         def gather_hoptoad_debugging_data
           # provide some things that hoptoad usually pulls from the controller or request

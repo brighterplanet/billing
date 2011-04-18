@@ -17,6 +17,9 @@ module BrighterPlanet
       THRESHOLD = '1'*40
       LIMIT = 10_000
       
+      # * prefer newer
+      # * drop zeros
+      
       def initialize(billables, selector, opts = {})
         @billables = billables
         @selector = (selector || {}).symbolize_keys.merge :execution_id => { '$lte' => THRESHOLD }

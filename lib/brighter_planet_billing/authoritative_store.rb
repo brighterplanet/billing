@@ -66,7 +66,9 @@ module BrighterPlanet
         'EmissionEstimateService' => [
           # [['execution_id', ::Mongo::ASCENDING]],
           # [['emitter', ::Mongo::ASCENDING]],
-          [ [['emitter', ::Mongo::ASCENDING], ['execution_id', ::Mongo::ASCENDING]], { :unique => false } ]
+          [ [['params', ::Mongo::ASCENDING], ['execution_id', ::Mongo::ASCENDING]], { :unique => false, :background => true } ],
+          # [ [['emitter', ::Mongo::ASCENDING], ['execution_id', ::Mongo::ASCENDING]], { :unique => false } ],
+          # [ [['params', ::Mongo::ASCENDING], ['execution_id', ::Mongo::ASCENDING]], { :unique => false } ]
           # [['service', ::Mongo::ASCENDING], ['year', ::Mongo::ASCENDING], ['month', ::Mongo::ASCENDING]]
         ],
       }

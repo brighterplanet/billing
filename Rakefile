@@ -34,7 +34,7 @@ namespace :index do
 end
 
 namespace :emission_estimate_service do
-  task :migrate => :setup do
+  task :migrate => :clean do
     # require 'brighter_planet_metadata'
     # BrighterPlanet.metadata.emitters.each do |emitter|
     #   puts
