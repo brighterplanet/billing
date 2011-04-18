@@ -10,7 +10,6 @@ module BrighterPlanet
         end
         
         attr_accessor :certified
-        attr_accessor :input
         attr_accessor :url
         attr_accessor :emitter
         attr_accessor :color
@@ -24,12 +23,13 @@ module BrighterPlanet
         
         def gather_hoptoad_debugging_data
           # provide some things that hoptoad usually pulls from the controller or request
-          opts = {}
-          if input_params
-            opts[:url] = input_params[:url]
-            opts[:params] = input_params
-            opts[:session] = input_params[:session]
+          debug = {}
+          if params
+            debug[:url] = params[:url]
+            debug[:params] = params
+            debug[:session] = params[:session]
           end
+          debug
         end
       end
     end

@@ -1,5 +1,5 @@
 require 'mongo'
-
+require 'pp'
 # TODO: add all indexes
 
 module BrighterPlanet
@@ -10,10 +10,20 @@ module BrighterPlanet
       include ::Singleton
       
       def find(service_name, selector, opts = {})
+        # unless selector == {}
+        #   opts = opts.dup # mongo-ruby-driver borks input args
+        #   cursor = collection(service_name).find(selector, opts)
+        #   $stderr.puts "got cursor #{cursor.inspect}"
+        #   ::PP.pp(cursor.explain, $stderr)
+        #   cursor.close
+        #   $stderr.puts "closed cursor"
+        # end
+        opts = (opts || {}).dup # otherwise current version of mongo-ruby-driver borks input args
         collection(service_name).find selector, opts
       end
       
       def find_one(service_name, selector, opts = {})
+        opts = (opts || {}).dup # otherwise current version of mongo-ruby-driver borks input args
         collection(service_name).find_one selector, opts
       end
       
@@ -24,7 +34,7 @@ module BrighterPlanet
       # don't just delegate because counting with a selector requires a find in the middle
       def count(*args)
         service_name, selector, opts = args
-        opts ||= {}
+        opts = (opts || {}).dup # otherwise current version of mongo-ruby-driver borks input args
         if selector
           find(service_name, selector, opts).count
         else
@@ -41,6 +51,7 @@ module BrighterPlanet
       
       # Raw update... developers should generally use upsert
       def update(service_name, selector, document, opts = {})
+        opts = (opts || {}).dup # otherwise current version of mongo-ruby-driver borks input args
         collection(service_name).update selector, document, opts
       end
       
@@ -69,6 +80,10 @@ module BrighterPlanet
       rescue ::Mongo::OperationFailure
         $stderr.puts "[brighter_planet_billing] Failed to create index: #{$!.inspect}"
       end
+      
+      def index_information(service_name)
+        collection(service_name).index_information
+      end
 
       private
 
@@ -80,6 +95,7 @@ module BrighterPlanet
         return @db if @db.is_a? ::Mongo::DB
         @db = connection.db Billing.config.mongo_database
         @db.authenticate Billing.config.mongo_username, Billing.config.mongo_password
+        @db.strict = true
         @db
       end
       
@@ -89,11 +105,17 @@ module BrighterPlanet
         'ReferenceDataService' => 'ReferenceDataService',
       }
       
+      def actual_collection_name(service_name)
+        service_name = service_name.to_s
+        raise(::ArgumentError, "[brighter_planet_billing] No collection found for service '#{service_name}'") unless ACTUAL_COLLECTION_NAMES.has_key?(service_name)
+        ACTUAL_COLLECTION_NAMES[service_name]
+      end
+      
       def collection(service_name)
         service_name = service_name.to_s
         @collection ||= {}
         return @collection[service_name] if @collection[service_name].is_a? ::Mongo::Collection
-        @collection[service_name] = db.collection ACTUAL_COLLECTION_NAMES[service_name]
+        @collection[service_name] = db.collection actual_collection_name(service_name)
       end
     end
   end

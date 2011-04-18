@@ -1,4 +1,4 @@
-require 'statdatapoints'
+require 'statsample'
 
 module BrighterPlanet
   class Billing
@@ -14,32 +14,36 @@ module BrighterPlanet
       # thanks http://cookbook.mongodb.org/patterns/random-attribute/
       # ('1'*40) corresponds to 1/16 or 6.25% sample
       # this can be further limited by passing :limit => 5000 in the opts
-      SAMPLE_THRESHOLD = '1'*40
+      THRESHOLD = '1'*40
+      LIMIT = 10_000
       
       def initialize(billables, selector, opts = {})
         @billables = billables
-        @selector = selector
-        @opts = opts
+        @selector = (selector || {}).symbolize_keys.merge :execution_id => { '$lte' => THRESHOLD }
+        @opts = (opts || {}).symbolize_keys.reverse_merge :limit => LIMIT
       end
       
       def mean(field)
         vector(field).mean
       end
       
-      def variance(field)
-        vector(field).variance
+      def standard_deviation(field)
+        vector(field).sd
       end
       
       private
       
       def datapoints
-        @datapoints ||= billables.stream(selector.merge(:execution_id => { '$lte' => SAMPLE_THRESHOLD }), opts) do |billable|
-          datapoints.push billable
+        return @datapoints if @datapoints.is_a?(::Array)
+        @datapoints = []
+        billables.stream(selector, opts) do |billable|
+          @datapoints.push billable
         end
+        @datapoints
       end
       
       def vector(field)
-        datapoints.map { |billable| billable.send(field) }.to_scale
+        datapoints.map { |billable| billable.send(field).to_f }.to_scale
       end
     end
   end

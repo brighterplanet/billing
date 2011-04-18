@@ -3,7 +3,7 @@ module BrighterPlanet
     class Storage
       
       include ::Singleton
-                  
+      
       delegate :count, :to => :authoritative_store
       delegate :find_one, :to => :authoritative_store
       delegate :find, :to => :authoritative_store

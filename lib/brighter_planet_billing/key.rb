@@ -28,10 +28,8 @@ module BrighterPlanet
       
       def each_billable
         raise "each service..."
-        Billing.storage.find(:key => key) do |cursor|
-          cursor.each do |doc|
-            yield Billable.new(doc)
-          end
+        Billing.storage.find(:key => key).each do |cursor|
+          yield Billable.new(doc)
         end
       end
     end

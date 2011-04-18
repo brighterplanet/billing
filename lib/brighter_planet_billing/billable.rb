@@ -48,6 +48,7 @@ module BrighterPlanet
         end
       end
 
+      attr_accessor :params
       attr_accessor :year
       attr_accessor :month
       attr_accessor :key
@@ -85,7 +86,7 @@ module BrighterPlanet
       # piggyback off activerecord's json, which defines #as_json for everything
       def to_hash
         as_json.inject({}) do |memo, (k, v)|
-          memo[k.to_s] = (v.is_a?(::Symbol) ? v.to_s : v)
+          memo[k.to_s] = (v.is_a?(::Symbol) ? v.to_s : v) unless v.nil?
           memo
         end
       end
