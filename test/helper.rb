@@ -2,7 +2,7 @@ require 'rubygems'
 require 'bundler'
 Bundler.setup
 require 'test/unit'
-# require 'active_support/all'
+require 'active_support/all'
 require 'active_record'
 # thanks authlogic!
 ActiveRecord::Schema.verbose = false

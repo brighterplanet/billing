@@ -43,10 +43,9 @@ module BrighterPlanet
       end
       
       def save_execution(service_name, execution_id, doc)
-        doc ||= {}
-        doc.symbolize_keys!
-        doc[:execution_id] = execution_id
-        update(service_name, { :execution_id => execution_id }, doc, :upsert => true)
+        doc = (doc || {}).symbolize_keys.merge(:execution_id => execution_id)
+        selector = { :execution_id => execution_id }
+        update(service_name, selector, doc, :upsert => true)
       end
       
       # Raw update... developers should generally use upsert

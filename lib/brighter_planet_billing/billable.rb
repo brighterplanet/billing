@@ -80,17 +80,9 @@ module BrighterPlanet
       end
 
       def save
-        Billing.storage.save_execution service.name, execution_id, to_hash
+        Billing.storage.save_execution service.name, execution_id, as_json
       end
       
-      # piggyback off activerecord's json, which defines #as_json for everything
-      def to_hash
-        as_json.inject({}) do |memo, (k, v)|
-          memo[k.to_sym] = (v.is_a?(::Symbol) ? v.to_s : v) unless v.nil?
-          memo
-        end
-      end
-
       def bill(&blk)
         self.execution_id = Billing.generate_execution_id
         now = ::Time.now
