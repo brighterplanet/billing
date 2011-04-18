@@ -13,9 +13,11 @@ module BrighterPlanet
         attr_accessor :url
         attr_accessor :emitter
         attr_accessor :color
-        attr_accessor :cm1_git_version
-        attr_accessor :emitter_git_version
+        attr_accessor :cm1_version
+        attr_accessor :emitter_version
         attr_accessor :emission
+        attr_accessor :compliance
+        attr_accessor :timeframe
         
         def gather_hoptoad_debugging_data
           # provide some things that hoptoad usually pulls from the controller or request
