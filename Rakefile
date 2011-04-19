@@ -34,30 +34,37 @@ namespace :index do
 end
 
 namespace :emission_estimate_service do
-  task :migrate => :clean do
-    # require 'brighter_planet_metadata'
-    # BrighterPlanet.metadata.emitters.each do |emitter|
-    #   puts
-    #   puts emitter
-    #   puts BrighterPlanet::Billing.authoritative_store.update('EmissionEstimateService', {:emitter_common_name=>emitter.underscore, :emitter=>{'$exists'=>false}}, {'$set'=>{:emitter=>emitter}}, :safe => false, :upsert => false, :multi => true)
-    # end
+  task :clean1 => :setup do
+    require 'brighter_planet_metadata'
+    BrighterPlanet.metadata.emitters.each do |emitter|
+      puts
+      puts emitter
+      puts BrighterPlanet::Billing.authoritative_store.update('EmissionEstimateService', {:emitter_common_name=>emitter.underscore, :emitter=>{'$exists'=>false}}, {'$set'=>{:emitter=>emitter}}, :safe => false, :upsert => false, :multi => true)
+    end
+  end
+  
+  task :clean2 => :setup do
     count = 0
-    BrighterPlanet::Billing.emission_estimate_service.queries.stream({:emission=>{'$exists'=>false}}) do |billable|
+    BrighterPlanet::Billing.emission_estimate_service.queries.stream({:output_params=>{'$exists'=>true}}) do |query|
       changed = false
-      if output_params = billable.instance_variable_get(:@output_params) and output_params.is_a?(::Hash)
-        billable.emission = output_params.symbolize_keys[:emission].to_f
-        billable.instance_variable_set :@output_params, nil
+      if emitter_common_name = query.instance_variable_get(:@emitter_common_name) and query.emitter != emitter_common_name.camelcase
+        query.emitter = emitter_common_name.camelcase
         changed = true
       end
-      if params = billable.instance_variable_get(:@input_params) and params.is_a?(::Hash)
-        billable.params = params.symbolize_keys
-        billable.instance_variable_set :@input_params, nil
+      if output_params = query.instance_variable_get(:@output_params) and output_params.is_a?(::Hash)
+        query.emission = output_params.symbolize_keys[:emission].to_f
+        query.instance_variable_set :@output_params, nil
+        changed = true
+      end
+      if params = query.instance_variable_get(:@input_params) and params.is_a?(::Hash)
+        query.params = params.symbolize_keys
+        query.instance_variable_set :@input_params, nil
         changed = true
       end
       if changed
-        billable.save
-        if (count % 500) == 0
-          $stderr.puts "fixed #{count+=1} (example: #{billable.execution_id})"
+        query.save
+        if ((count+=1) % 500) == 0
+          $stderr.puts "fixed #{count} (example: #{query.execution_id})"
         end
       end
     end

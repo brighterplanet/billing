@@ -80,7 +80,11 @@ module BrighterPlanet
       end
 
       def save
-        Billing.storage.save_execution service.name, execution_id, as_json
+        Billing.storage.save_execution service.name, execution_id, to_hash
+      end
+      
+      def to_hash(*)
+        instance_values.reject { |k, v| v.nil? }
       end
       
       def bill(&blk)
