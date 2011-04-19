@@ -4,6 +4,7 @@ Bundler.setup
 require 'test/unit'
 require 'active_support/all'
 require 'active_record'
+require 'timeframe'
 # thanks authlogic!
 ActiveRecord::Schema.verbose = false
 begin
