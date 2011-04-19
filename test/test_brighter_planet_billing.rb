@@ -42,7 +42,7 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     ::BrighterPlanet::Billing.emission_estimate_service.bill do |query|
       query.certified = true
       query.key = params['key']
-      query.timeframe = Timeframe.this_year.to_json
+      query.timeframe = Timeframe.this_year
       query.params = params
       query.url = params['url']
       query.emitter = 'Automobile'
@@ -68,7 +68,7 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     assert_false ::BrighterPlanet::Billing.config.disable_caching?
     ::BrighterPlanet::Billing.emission_estimate_service.bill do |query|
       query.certified = false
-      query.timeframe = Timeframe.this_year.to_json
+      query.timeframe = Timeframe.this_year
       query.key = params['key']
       query.params = params
       query.url = params['url']
@@ -91,6 +91,7 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
   end
   
   def test_013_catches_errors_with_hoptoad
+    ::BrighterPlanet::Billing.config.disable_hoptoad = false
     assert_raises(::BrighterPlanet::Billing::ReportedExceptionToHoptoad) do
       ::BrighterPlanet::Billing.emission_estimate_service.bill do |query|
         raise StandardError
@@ -99,7 +100,6 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
   end
   
   def test_014_catches_errors_without_hoptoad
-    ::BrighterPlanet::Billing.config.disable_hoptoad = true
     assert_raises(StandardError) do
       ::BrighterPlanet::Billing.emission_estimate_service.bill do |query|
         raise StandardError
@@ -108,6 +108,7 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
   end
   
   def test_015_allows_certain_errors_through
+    ::BrighterPlanet::Billing.config.disable_hoptoad = false
     require 'leap'
     ::BrighterPlanet::Billing.config.allowed_exceptions.push ::Leap::NoSolutionError
     assert_raises(::Leap::NoSolutionError) do

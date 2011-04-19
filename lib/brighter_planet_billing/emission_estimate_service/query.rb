@@ -1,3 +1,5 @@
+require 'timeframe'
+
 module BrighterPlanet
   class Billing
     class EmissionEstimateService
@@ -17,7 +19,17 @@ module BrighterPlanet
         attr_accessor :emitter_version
         attr_accessor :emission
         attr_accessor :compliance
-        attr_accessor :timeframe
+
+        attr_reader :timeframe_from
+        attr_reader :timeframe_to
+        def timeframe
+          ::Timeframe.new timeframe_from, timeframe_to, :skip_year_boundary_crossing_check => true
+        end
+        def timeframe=(timeframe)
+          @timeframe_from = timeframe.from.to_time
+          @timeframe_to = timeframe.to.to_time
+          timeframe
+        end
         
         def gather_hoptoad_debugging_data
           # provide some things that hoptoad usually pulls from the controller or request

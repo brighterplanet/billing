@@ -20,7 +20,7 @@ class Test::Unit::TestCase
   def setup
     ::BrighterPlanet::Billing.setup
     ::BrighterPlanet::Billing.config.disable_caching = false
-    ::BrighterPlanet::Billing.config.disable_hoptoad = false
+    ::BrighterPlanet::Billing.config.disable_hoptoad = true
     ::BrighterPlanet::Billing.config.allowed_exceptions.clear
   end
 end
