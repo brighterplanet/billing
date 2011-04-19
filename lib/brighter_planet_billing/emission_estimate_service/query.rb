@@ -13,6 +13,7 @@ module BrighterPlanet
         
         attr_accessor :certified
         attr_accessor :url
+        attr_accessor :methodology
         attr_accessor :emitter
         attr_accessor :color
         attr_accessor :cm1_version
