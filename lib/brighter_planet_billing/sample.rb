@@ -6,7 +6,7 @@ module BrighterPlanet
     # assert(flight_sample.mean(:emission) > 0)
     # assert(flight_sample.mean(:emission) < 801)
     class Sample
-      attr_reader :billables
+      attr_reader :source
       attr_reader :selector
       attr_reader :opts
       
@@ -20,8 +20,8 @@ module BrighterPlanet
       # * prefer newer
       # * drop zeros
       
-      def initialize(billables, selector, opts = {})
-        @billables = billables
+      def initialize(source, selector, opts = {})
+        @source = source
         @selector = (selector || {}).symbolize_keys.merge :execution_id => { '$lte' => THRESHOLD }
         @opts = (opts || {}).symbolize_keys.reverse_merge :limit => LIMIT
       end
@@ -34,19 +34,17 @@ module BrighterPlanet
         vector(field).sd
       end
       
-      private
-      
-      def datapoints
-        return @datapoints if @datapoints.is_a?(::Array)
-        @datapoints = []
-        billables.stream(selector, opts) do |billable|
-          @datapoints.push billable
+      def billables
+        return @billables if @billables.is_a?(::Array)
+        @billables = []
+        source.stream(selector, opts) do |billable|
+          @billables.push billable
         end
-        @datapoints
+        @billables
       end
       
       def vector(field)
-        datapoints.map { |billable| billable.send(field).to_f }.to_scale
+        billables.map { |billable| billable.send(field).to_f }.to_scale
       end
     end
   end
