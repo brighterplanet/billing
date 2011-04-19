@@ -48,7 +48,6 @@ module BrighterPlanet
         end
       end
 
-      attr_accessor :params
       attr_accessor :year
       attr_accessor :month
       attr_accessor :key
@@ -60,6 +59,11 @@ module BrighterPlanet
       attr_accessor :hoptoad_response
       attr_accessor :succeeded
       attr_accessor :realtime
+
+      attr_writer :params
+      def params
+        (@params || @input_params).try :symbolize_keys
+      end
 
       def initialize(doc = {})
         doc.each do |k, v|
