@@ -11,7 +11,7 @@ class TestEmissionEstimateService < Test::Unit::TestCase
   
   def test_001_sample_query_results
     bill_flight_query
-    flight_sample = BrighterPlanet::Billing.emission_estimate_service.queries.sample({:emitter => 'Flight', :emission => { '$exists' => true }})
+    flight_sample = BrighterPlanet::Billing.emission_estimate_service.queries.sample({:emitter => 'Flight', :emission => { '$exists' => true }}, :limit => 25)
     
     mean_emission = flight_sample.mean(:emission)
     $stderr.puts mean_emission

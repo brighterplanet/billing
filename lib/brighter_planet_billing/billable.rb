@@ -56,9 +56,13 @@ module BrighterPlanet
       attr_accessor :execution_id
       attr_accessor :started_at
       attr_accessor :stopped_at
-      attr_accessor :hoptoad_response
       attr_accessor :succeeded
       attr_accessor :realtime
+
+      attr_writer :hoptoad_error_id
+      def hoptoad_error_id
+        @hoptoad_error_id || @hoptoad_response
+      end
 
       attr_writer :params
       def params
@@ -97,7 +101,6 @@ module BrighterPlanet
         self.year = now.year
         self.month = now.month
         self.started_at = now
-        self.hoptoad_response = nil
         self.succeeded = false
         self.realtime = ::Benchmark.realtime { blk.call self } # where the magic happens
         self.succeeded = true
@@ -105,8 +108,8 @@ module BrighterPlanet
         if Billing.config.disable_hoptoad or Billing.config.allowed_exceptions.any? { |exception_class| exception.is_a? exception_class }
           raise exception
         else
-          if respond_to?(:gather_hoptoad_debugging_data) and hoptoad_container = ::HoptoadNotifier.notify_or_ignore(exception, gather_hoptoad_debugging_data)
-            self.hoptoad_response = hoptoad_container.body
+          if respond_to?(:gather_hoptoad_debugging_data) and hoptoad_error_id = ::HoptoadNotifier.notify_or_ignore(exception, gather_hoptoad_debugging_data)
+            self.hoptoad_error_id = hoptoad_error_id
           end
           raise Billing::ReportedExceptionToHoptoad
         end
