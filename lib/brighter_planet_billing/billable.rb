@@ -1,9 +1,12 @@
 require 'benchmark'
+require 'bson'
 
 module BrighterPlanet
   class Billing
     class Billable
       class << self
+        autoload :Sample, 'brighter_planet_billing/billable/sample'
+        
         def service
           raise ::RuntimeError, "[brighter_planet_billing] subclass of Billable must define .service"
         end
@@ -45,6 +48,31 @@ module BrighterPlanet
           billable.bill &blk
           billable.save
           billable
+        end
+        
+        # http://stackoverflow.com/questions/5723889/how-can-i-stringify-a-bson-object-inside-of-a-mongodb-map-function
+        # http://stackoverflow.com/questions/5724086/why-is-mongodb-treating-these-two-keys-as-they-same
+        # Billing.storage.distinct(service.name, field, selector)
+        def top_values(num, field, selector, opts = {})
+          selector = selector.symbolize_keys.reverse_merge field.to_sym => { '$exists' => true, '$nin' => [ '', nil, {} ]}
+          opts = opts.symbolize_keys.merge :query => selector
+          m = ::BSON::Code.new <<-EOS
+            function() {
+              emit(this.#{field}, 1);
+            }
+          EOS
+          r = ::BSON::Code.new <<-EOS
+            function(k, vals) {
+              var sum=0;
+              for (var i in vals) sum += vals[i];
+              return sum;
+            }
+          EOS
+          values = []
+          Billing.storage.map_reduce(service.name, m, r, opts).find({}, :limit => num, :sort => [['value', ::Mongo::DESCENDING]]).each do |doc|
+            values.push doc['_id']
+          end
+          values
         end
       end
 

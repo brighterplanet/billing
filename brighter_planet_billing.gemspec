@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'sqlite3-ruby'
   s.add_development_dependency 'leap'
   s.add_development_dependency 'brighter_planet_metadata'
+  s.add_dependency 'eat'
   s.add_dependency 'timeframe'
   s.add_dependency 'statsample'
   s.add_dependency 'i18n'

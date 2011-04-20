@@ -42,6 +42,10 @@ module BrighterPlanet
         end
       end
       
+      def map_reduce(service_name, m, r, opts = {})
+        collection(service_name).map_reduce m, r, opts
+      end
+      
       def save_execution(service_name, execution_id, doc)
         doc = (doc || {}).symbolize_keys.merge(:execution_id => execution_id)
         selector = { :execution_id => execution_id }
@@ -63,9 +67,10 @@ module BrighterPlanet
       # key_1   key   false 
       INDEXES = {
         'EmissionEstimateService' => [
-          # [['execution_id', ::Mongo::ASCENDING]],
-          # [['emitter', ::Mongo::ASCENDING]],
-          [ [['params', ::Mongo::ASCENDING], ['execution_id', ::Mongo::ASCENDING]], { :unique => false, :background => true } ],
+          # [ [['execution_id', ::Mongo::ASCENDING]], {} ],
+          # [ [['emitter', ::Mongo::ASCENDING]], {}],
+          [ [['params', ::Mongo::ASCENDING]], { :unique => false, :background => true }],
+          # [ [['params', ::Mongo::ASCENDING], ['execution_id', ::Mongo::ASCENDING]], { :unique => false, :background => true } ],
           # [ [['emitter', ::Mongo::ASCENDING], ['execution_id', ::Mongo::ASCENDING]], { :unique => false } ],
           # [ [['params', ::Mongo::ASCENDING], ['execution_id', ::Mongo::ASCENDING]], { :unique => false } ]
           # [['service', ::Mongo::ASCENDING], ['year', ::Mongo::ASCENDING], ['month', ::Mongo::ASCENDING]]

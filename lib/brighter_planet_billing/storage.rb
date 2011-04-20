@@ -8,6 +8,7 @@ module BrighterPlanet
       delegate :find_one, :to => :authoritative_store
       delegate :find, :to => :authoritative_store
       delegate :distinct, :to => :authoritative_store
+      delegate :map_reduce, :to => :authoritative_store
 
       delegate :synchronized?, :to => :cache
       delegate :synchronize, :to => :cache
