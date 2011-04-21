@@ -6,6 +6,8 @@ module BrighterPlanet
     class Billable
       class << self
         autoload :Sample, 'brighter_planet_billing/billable/sample'
+        autoload :Trend, 'brighter_planet_billing/billable/trend'
+        autoload :Top, 'brighter_planet_billing/billable/top'
         
         def service
           raise ::RuntimeError, "[brighter_planet_billing] subclass of Billable must define .service"
@@ -38,9 +40,21 @@ module BrighterPlanet
             yield new(doc)
           end
         end
+        
+        def map_reduce(m, r, opts = {})
+          Billing.storage.map_reduce service.name, m, r, opts
+        end
 
-        def sample(selector, opts = {})
-          Sample.new self, selector, opts
+        def sample(attrs = {})
+          Sample.new self, attrs
+        end
+        
+        def trend(attrs = {})
+          Trend.new self, attrs
+        end
+        
+        def top(attrs = {})
+          Top.new self, attrs
         end
         
         def bill(&blk)
@@ -50,30 +64,6 @@ module BrighterPlanet
           billable
         end
         
-        # http://stackoverflow.com/questions/5723889/how-can-i-stringify-a-bson-object-inside-of-a-mongodb-map-function
-        # http://stackoverflow.com/questions/5724086/why-is-mongodb-treating-these-two-keys-as-they-same
-        # Billing.storage.distinct(service.name, field, selector)
-        def top_values(num, field, selector, opts = {})
-          selector = selector.symbolize_keys.reverse_merge field.to_sym => { '$exists' => true, '$nin' => [ '', nil, {} ]}
-          opts = opts.symbolize_keys.merge :query => selector
-          m = ::BSON::Code.new <<-EOS
-            function() {
-              emit(this.#{field}, 1);
-            }
-          EOS
-          r = ::BSON::Code.new <<-EOS
-            function(k, vals) {
-              var sum=0;
-              for (var i in vals) sum += vals[i];
-              return sum;
-            }
-          EOS
-          values = []
-          Billing.storage.map_reduce(service.name, m, r, opts).find({}, :limit => num, :sort => [['value', ::Mongo::DESCENDING]]).each do |doc|
-            values.push doc['_id']
-          end
-          values
-        end
       end
 
       attr_accessor :year

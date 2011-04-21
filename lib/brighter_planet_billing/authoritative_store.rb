@@ -1,5 +1,4 @@
 require 'mongo'
-require 'pp'
 # TODO: add all indexes
 
 module BrighterPlanet
@@ -11,6 +10,7 @@ module BrighterPlanet
       
       def find(service_name, selector, opts = {})
         # unless selector == {}
+        #   require 'pp'
         #   opts = opts.dup # mongo-ruby-driver borks input args
         #   cursor = collection(service_name).find(selector, opts)
         #   $stderr.puts "got cursor #{cursor.inspect}"
@@ -43,6 +43,7 @@ module BrighterPlanet
       end
       
       def map_reduce(service_name, m, r, opts = {})
+        opts = opts.symbolize_keys.reverse_merge(:out => "tmp#{::ActiveSupport::SecureRandom.hex(5)}")
         collection(service_name).map_reduce m, r, opts
       end
       
@@ -67,13 +68,13 @@ module BrighterPlanet
       # key_1   key   false 
       INDEXES = {
         'EmissionEstimateService' => [
+          # [ [['key', ::Mongo::ASCENDING]], {} ],
           # [ [['execution_id', ::Mongo::ASCENDING]], {} ],
           # [ [['emitter', ::Mongo::ASCENDING]], {}],
-          [ [['params', ::Mongo::ASCENDING]], { :unique => false, :background => true }],
-          # [ [['params', ::Mongo::ASCENDING], ['execution_id', ::Mongo::ASCENDING]], { :unique => false, :background => true } ],
-          # [ [['emitter', ::Mongo::ASCENDING], ['execution_id', ::Mongo::ASCENDING]], { :unique => false } ],
-          # [ [['params', ::Mongo::ASCENDING], ['execution_id', ::Mongo::ASCENDING]], { :unique => false } ]
-          # [['service', ::Mongo::ASCENDING], ['year', ::Mongo::ASCENDING], ['month', ::Mongo::ASCENDING]]
+          [ [['started_at', ::Mongo::ASCENDING]], { :unique => false, :background => true }],
+          # [ [['params', ::Mongo::ASCENDING]], { :unique => false, :background => true }],
+          [ [['emitter', ::Mongo::ASCENDING], ['key', ::Mongo::ASCENDING], ['execution_id', ::Mongo::ASCENDING]], { :unique => false, :background => true } ],
+          [ [['emitter', ::Mongo::ASCENDING], ['key', ::Mongo::ASCENDING], ['params', ::Mongo::ASCENDING], ['execution_id', ::Mongo::ASCENDING]], { :unique => false, :background => true } ],
         ],
       }
       
@@ -107,7 +108,7 @@ module BrighterPlanet
       
       # since EmissionEstimateService's collection is currently called billable, we have to have a mapping
       ACTUAL_COLLECTION_NAMES = {
-        'EmissionEstimateService' => 'billables', # legacy, this will change to EmissionEstimateService soon
+        'EmissionEstimateService' => 'EmissionEstimateService', # legacy, this will change to EmissionEstimateService soon
         'ReferenceDataService' => 'ReferenceDataService',
       }
       

@@ -7,23 +7,27 @@ module BrighterPlanet
       # assert(flight_sample.mean(:emission) > 0)
       # assert(flight_sample.mean(:emission) < 801)
       class Sample
-        attr_reader :source
-        attr_reader :selector
-        attr_reader :opts
+        attr_reader :parent
       
+        # attrs
+        # * selector
+        def initialize(parent, attrs = {})
+          @parent = parent
+          attrs.each do |k, v|
+            instance_variable_set "@#{k}", v
+          end
+        end
+        
         # using execution_id as a random attribution
         # thanks http://cookbook.mongodb.org/patterns/random-attribute/
-        # ('1'*40) corresponds to 1/8 or 12.50% sample
+        # ('2'*40) corresponds to 1/8 or 12.50% sample
         THRESHOLD = '2'*40
-      
-        # * prefer newer
-        # * drop zeros
-      
-        def initialize(source, selector, opts = {})
-          @source = source
-          @selector = (selector || {}).symbolize_keys.merge :execution_id => { '$lte' => THRESHOLD }
-          @opts = (opts || {}).symbolize_keys
+
+        def selector_with_random_attribute_threshold
+          @selector.symbolize_keys.merge :execution_id => { '$lte' => THRESHOLD }
         end
+        
+        alias :selector :selector_with_random_attribute_threshold
       
         def mean(field)
           vector(field).mean
@@ -38,23 +42,17 @@ module BrighterPlanet
           v = vector(field)
           [ v.mean, v.sd ]
         end
-      
-        def billables
-          return @billables if @billables.is_a?(::Array)
-          @billables = []
-          source.stream(selector, opts) do |billable|
-            @billables.push billable
-          end
-          @billables
-        end
-      
+
+        LIMIT = 1_000# 25 #10_000
+
         def vector(field)
-          billables.inject([]) do |memo, billable|
-            if datapoint = billable.send(field).to_f and datapoint.abs > 0
-              memo.push datapoint
+          ary = []
+          parent.stream(selector, :limit => LIMIT) do |billable|
+            if datapoint = billable.send(field).to_f
+              ary.push datapoint
             end
-            memo
-          end.to_scale
+          end
+          ary.to_scale
         end
       end
     end
