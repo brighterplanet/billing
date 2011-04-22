@@ -25,7 +25,9 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'brighter_planet_metadata'
   unless RUBY_VERSION >= '1.9'
     s.add_dependency 'fastercsv'
+    s.add_dependency 'SystemTimer'
   end
+  s.add_dependency 'thor'
   s.add_dependency 'eat'
   s.add_dependency 'timeframe'
   s.add_dependency 'statsample'

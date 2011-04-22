@@ -1,3 +1,6 @@
+unless ::RUBY_VERSION >= '1.9'
+  require 'system_timer'
+end
 require 'mongo'
 # TODO: add all indexes
 
@@ -9,15 +12,14 @@ module BrighterPlanet
       include ::Singleton
       
       def find(service_name, selector, opts = {})
-        # unless selector == {}
-        #   require 'pp'
-        #   opts = opts.dup # mongo-ruby-driver borks input args
-        #   cursor = collection(service_name).find(selector, opts)
-        #   $stderr.puts "got cursor #{cursor.inspect}"
-        #   ::PP.pp(cursor.explain, $stderr)
-        #   cursor.close
-        #   $stderr.puts "closed cursor"
-        # end
+        if ::ENV['BRIGHTER_PLANET_BILLING_EXPLAIN'] == 'true' and selector != {}
+          require 'pp'
+          opts = opts.dup # mongo-ruby-driver borks input args
+          cursor = collection(service_name).find(selector, opts)
+          $stderr.puts "[brighter_planet_billing] EXPLAIN #{selector.to_json}"
+          ::PP.pp cursor.explain, $stderr
+          cursor.close
+        end
         opts = (opts || {}).dup # otherwise current version of mongo-ruby-driver borks input args
         collection(service_name).find selector, opts
       end

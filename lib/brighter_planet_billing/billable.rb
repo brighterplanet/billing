@@ -4,11 +4,11 @@ require 'bson'
 module BrighterPlanet
   class Billing
     class Billable
+      autoload :Sample, 'brighter_planet_billing/billable/sample'
+      autoload :Trend, 'brighter_planet_billing/billable/trend'
+      autoload :Top, 'brighter_planet_billing/billable/top'
+
       class << self
-        autoload :Sample, 'brighter_planet_billing/billable/sample'
-        autoload :Trend, 'brighter_planet_billing/billable/trend'
-        autoload :Top, 'brighter_planet_billing/billable/top'
-        
         def service
           raise ::RuntimeError, "[brighter_planet_billing] subclass of Billable must define .service"
         end

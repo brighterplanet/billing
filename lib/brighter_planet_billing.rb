@@ -1,4 +1,5 @@
 require 'singleton'
+require 'stringio'
 require 'active_support'
 require 'active_support/version'
 if ::ActiveSupport::VERSION::MAJOR == 3
@@ -19,6 +20,7 @@ module BrighterPlanet
     autoload :AuthoritativeStore, 'brighter_planet_billing/authoritative_store'
     autoload :Key, 'brighter_planet_billing/key'
     autoload :Billable, 'brighter_planet_billing/billable'
+    autoload :ToCSV, 'brighter_planet_billing/to_csv'
     
     # services
     autoload :EmissionEstimateService, 'brighter_planet_billing/emission_estimate_service'
