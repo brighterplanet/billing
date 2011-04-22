@@ -14,6 +14,17 @@ end
 module BrighterPlanet
   class Billing
     module ToCSV
+      def as_csv_value(value)
+        case value
+        when ::Hash, ::Array
+          value.to_json.gsub(%{"}, %{'})
+        when ::Time
+          value.to_formatted_s(:db)
+        else
+          value
+        end
+      end
+      
       # example arguments
       # to_csv()                            => returns a string
       # to_csv($stdout)                     => writes to $stdout

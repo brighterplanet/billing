@@ -23,8 +23,10 @@ module BrighterPlanet
         include ::Enumerable
 
         def each
-          parent.map_reduce(map_function, reduce_function, :query => selector_with_field_existence_checking).find({}, :limit => limit, :sort => [['value', ::Mongo::DESCENDING]]).each do |doc|
-            yield doc['_id']
+          parent.map_reduce(map_function, reduce_function, :query => selector_with_field_existence_checking) do |tmp_collection|
+            tmp_collection.find({}, :limit => limit, :sort => [['value', ::Mongo::DESCENDING]]).each do |doc|
+              yield doc['_id']
+            end
           end
         end
         
@@ -52,14 +54,14 @@ module BrighterPlanet
           EOS
         end
         
-        include ToCSV
-        
-        def write_csv(f, options = {})
-          f.puts [ 'field', 'field_DIGEST' ].to_csv
-          each do |value|
-            f.puts [ value.to_json, value.hash ].to_csv
-          end
-        end
+        # include ToCSV
+        # 
+        # def write_csv(f, options = {})
+        #   f.puts [ 'field', 'field_DIGEST' ].to_csv
+        #   each do |value|
+        #     f.puts [ as_csv_value(value), value.hash ].to_csv
+        #   end
+        # end
       end
     end
   end

@@ -41,8 +41,8 @@ module BrighterPlanet
           end
         end
         
-        def map_reduce(m, r, opts = {})
-          Billing.storage.map_reduce service.name, m, r, opts
+        def map_reduce(m, r, opts = {}, &blk)
+          Billing.storage.map_reduce service.name, m, r, opts, &blk
         end
 
         def sample(attrs = {})

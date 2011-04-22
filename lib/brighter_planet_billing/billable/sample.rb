@@ -60,7 +60,7 @@ module BrighterPlanet
               if field.end_with?('_DIGEST')
                 row[field.sub('_DIGEST', '')].hash
               else
-                row[field].is_a?(::String) ? row[field] : row[field].to_json
+                as_csv_value field
               end
             end
             f.puts values.to_csv

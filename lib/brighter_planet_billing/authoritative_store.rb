@@ -44,9 +44,12 @@ module BrighterPlanet
         end
       end
       
-      def map_reduce(service_name, m, r, opts = {})
-        opts = opts.symbolize_keys.reverse_merge(:out => "tmp#{::ActiveSupport::SecureRandom.hex(5)}")
-        collection(service_name).map_reduce m, r, opts
+      def map_reduce(service_name, m, r, opts = {}, &blk)
+        tmp_collection_name = ::ActiveSupport::SecureRandom.hex 5
+        tmp_collection = collection(service_name).map_reduce(m, r, opts.symbolize_keys.merge(:out => tmp_collection_name))
+        blk.call tmp_collection
+      ensure
+        tmp_collection.drop
       end
       
       def save_execution(service_name, execution_id, doc)
