@@ -1,39 +1,14 @@
 require 'helper'
 
-class TestBrighterPlanetBilling < Test::Unit::TestCase
-  # sabshere 3/8/11 this is super slow
-  # def test_000_keys
-  #   keys = ::BrighterPlanet::Billing.keys.all
-  #   assert keys.map(&:key).include?('17a0c34541c953b5430adf8e2a1f50fb')
-  # end
-  
+class TestBrighterPlanetBilling < Test::Unit::TestCase  
   def test_001_count
     assert(::BrighterPlanet::Billing.emission_estimate_service.queries.count > 1_000)
   end
   
-  # all counting is currently quite slow
-  # def test_002_count_by_key
-  #   key_query_count = ::BrighterPlanet::Billing.emission_estimate_service.queries.count(:key => '17a0c34541c953b5430adf8e2a1f50fb')
-  #   assert(key_query_count > 1_000)
-  # end
-  # 
-  # def test_003_count_by_blank_key
-  #   key_query_count = ::BrighterPlanet::Billing.emission_estimate_service.queries.count(:key => nil)
-  #   assert(key_query_count > 1_000)
-  # end
-  #   
-  # def test_005_count_by_emitter
-  #   flight_query_count = ::BrighterPlanet::Billing.emission_estimate_service.queries.count(:emitter => 'Flight')
-  #   assert(flight_query_count > 1_000)
-  # end
-  #
-  # def test_006_count_by_month
-  #   december = ::BrighterPlanet::Billing.emission_estimate_service.queries.count(:year => 2010, :month => 12)
-  #   all_time = ::BrighterPlanet::Billing.emission_estimate_service.queries.count
-  #   assert(december > 1_000)
-  #   assert(all_time > december)
-  # end
-    
+  def test_002_all_keys
+    assert(BrighterPlanet::Billing.keys.all.length > 0)
+  end
+  
   def test_011_immediate_store_to_mongo
     ::BrighterPlanet::Billing.config.disable_caching = true
     params = { 'make' => 'Nissan', 'key' => 'test_store_to_mongo', 'url' => 'http://carbon.brighterplanet.com/automobiles.json?make=Nissan' }
@@ -132,34 +107,4 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     end
     assert_equal :yes_i_did, confirmation
   end
-  
-  # def test_999_key_yields_queries
-  #   catch :found_it do
-  #     assert_nothing_raised do
-  #       ::BrighterPlanet::Billing.emission_estimate_service.queries.stream(:key => '17a0c34541c953b5430adf8e2a1f50fb') do |query|
-  #         throw :found_it
-  #         raise "didn't find it!"
-  #       end
-  #     end
-  #   end
-  # end
-  # 
-  # def test_998_key_yields_queries_per_month
-  #   catch :found_it do
-  #     assert_nothing_raised do
-  #       ::BrighterPlanet::Billing.emission_estimate_service.queries.stream(:year => 2010, :month => 11, :key => '17a0c34541c953b5430adf8e2a1f50fb') do |query|
-  #         throw :found_it
-  #         raise "didn't find it!"
-  #       end
-  #     end
-  #   end
-  # end
-  # 
-  # def test_997_key_yields_queries_per_month_false_positives
-  #   assert_nothing_raised do
-  #     ::BrighterPlanet::Billing.emission_estimate_service.queries.stream(:year => 2009, :month => 11, :key => '17a0c34541c953b5430adf8e2a1f50fb') do |query|
-  #       raise "uhh ohh, found something!"
-  #     end
-  #   end
-  # end
 end

@@ -29,6 +29,14 @@ module BrighterPlanet
     
     class ReportedExceptionToHoptoad < RuntimeError; end
     
+    def self.services
+      [ emission_estimate_service ]
+    end
+    
+    def self.keys
+      Key
+    end
+    
     def self.emission_estimate_service
       EmissionEstimateService.instance
     end
