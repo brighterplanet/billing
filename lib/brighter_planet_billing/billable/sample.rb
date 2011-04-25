@@ -60,7 +60,7 @@ module BrighterPlanet
               if field.end_with?('_DIGEST')
                 row[field.sub('_DIGEST', '')].hash
               else
-                as_csv_value field
+                as_csv_value row[field]
               end
             end
             f.puts values.to_csv
@@ -86,7 +86,9 @@ module BrighterPlanet
         # faster than doing separately
         def mean_and_standard_deviation(field)
           v = vector(field)
-          [ v.mean, v.sd ]
+          mean = begin; v.mean; rescue; $!.inspect; end
+          sd = begin; v.sd; rescue; $!.inspect; end
+          [ mean, sd ]
         end
         
         def vector(field)
