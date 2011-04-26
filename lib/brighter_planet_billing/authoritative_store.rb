@@ -49,7 +49,7 @@ module BrighterPlanet
         tmp_collection = collection(service_name).map_reduce(m, r, opts.symbolize_keys.merge(:out => tmp_collection_name))
         blk.call tmp_collection
       ensure
-        tmp_collection.drop
+        tmp_collection.try :drop
       end
       
       def save_execution(service_name, execution_id, doc)
