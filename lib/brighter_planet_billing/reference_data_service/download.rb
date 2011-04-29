@@ -15,6 +15,7 @@ module BrighterPlanet
         attr_accessor :earth_version
         attr_accessor :content_length
         attr_accessor :source
+        attr_accessor :archived
         attr_accessor :line_count
       end
     end
