@@ -20,6 +20,7 @@ module BrighterPlanet
     autoload :AuthoritativeStore, 'brighter_planet_billing/authoritative_store'
     autoload :Key, 'brighter_planet_billing/key'
     autoload :Billable, 'brighter_planet_billing/billable'
+    autoload :Synchronization, 'brighter_planet_billing/synchronization'
     autoload :ToCSV, 'brighter_planet_billing/to_csv'
     
     # services

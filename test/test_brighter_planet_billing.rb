@@ -107,4 +107,8 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     end
     assert_equal :yes_i_did, confirmation
   end
+  
+  def test_018_synchronization
+    assert BrighterPlanet::Billing::Synchronization.respond_to? :perform
+  end
 end
