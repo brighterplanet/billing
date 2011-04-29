@@ -76,15 +76,13 @@ module BrighterPlanet
       attr_accessor :stopped_at
       attr_accessor :succeeded
       attr_accessor :realtime
-
-      attr_writer :hoptoad_error_id
-      def hoptoad_error_id
-        @hoptoad_error_id || @hoptoad_response
-      end
+      attr_accessor :format
+      attr_accessor :url
+      attr_accessor :hoptoad_error_id
 
       attr_writer :params
       def params
-        (@params || @input_params).try :symbolize_keys
+        @params.try :symbolize_keys
       end
 
       def initialize(doc = {})

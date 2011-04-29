@@ -110,24 +110,12 @@ module BrighterPlanet
         @db.strict = true
         @db
       end
-      
-      # since EmissionEstimateService's collection is currently called billable, we have to have a mapping
-      ACTUAL_COLLECTION_NAMES = {
-        'EmissionEstimateService' => 'EmissionEstimateService', # legacy, this will change to EmissionEstimateService soon
-        'ReferenceDataService' => 'ReferenceDataService',
-      }
-      
-      def actual_collection_name(service_name)
-        service_name = service_name.to_s
-        raise(::ArgumentError, "[brighter_planet_billing] No collection found for service '#{service_name}'") unless ACTUAL_COLLECTION_NAMES.has_key?(service_name)
-        ACTUAL_COLLECTION_NAMES[service_name]
-      end
-      
+            
       def collection(service_name)
         service_name = service_name.to_s
         @collection ||= {}
         return @collection[service_name] if @collection[service_name].is_a? ::Mongo::Collection
-        @collection[service_name] = db.collection actual_collection_name(service_name)
+        @collection[service_name] = db.collection service_name.to_s
       end
     end
   end

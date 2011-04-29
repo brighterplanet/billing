@@ -39,26 +39,32 @@ namespace :emission_estimate_service do
     BrighterPlanet.metadata.emitters.each do |emitter|
       puts
       puts emitter
-      puts BrighterPlanet::Billing.authoritative_store.update('EmissionEstimateService', {:emitter_common_name=>emitter.underscore, :emitter=>{'$exists'=>false}}, {'$set'=>{:emitter=>emitter}}, :safe => false, :upsert => false, :multi => true)
+      puts BrighterPlanet::Billing.authoritative_store.update('EmissionEstimateService', {:emitter_common_name=>emitter.underscore, :emitter=>{'$exists'=>false}}, {'$set'=>{:emitter=>emitter}}, :safe => true, :upsert => false, :multi => true)
     end
   end
   
   task :clean2 => :setup do
     count = 0
-    BrighterPlanet::Billing.emission_estimate_service.queries.stream({:output_params=>{'$exists'=>true}}) do |query|
+    BrighterPlanet::Billing.emission_estimate_service.queries.stream({:input_params=>{'$exists'=>true}}) do |query|
       changed = false
-      if emitter_common_name = query.instance_variable_get(:@emitter_common_name) and query.emitter != emitter_common_name.camelcase
-        query.emitter = emitter_common_name.camelcase
+      # if emitter_common_name = query.instance_variable_get(:@emitter_common_name) and query.emitter != emitter_common_name.camelcase
+      #   query.emitter = emitter_common_name.camelcase
+      #   changed = true
+      # end
+      if query.instance_variable_defined?(:@output_params)
+        output_params = query.instance_variable_get(:@output_params)
+        if output_params.is_a?(::Hash)
+          query.emission = output_params.symbolize_keys[:emission].to_f
+          query.instance_variable_set :@output_params, nil
+        end
         changed = true
       end
-      if output_params = query.instance_variable_get(:@output_params) and output_params.is_a?(::Hash)
-        query.emission = output_params.symbolize_keys[:emission].to_f
-        query.instance_variable_set :@output_params, nil
-        changed = true
-      end
-      if params = query.instance_variable_get(:@input_params) and params.is_a?(::Hash)
-        query.params = params.symbolize_keys
-        query.instance_variable_set :@input_params, nil
+      if query.instance_variable_defined?(:@input_params)
+        params = query.instance_variable_get(:@input_params)
+        if params.is_a?(::Hash)
+          query.params = params.symbolize_keys
+          query.instance_variable_set :@input_params, nil
+        end
         changed = true
       end
       if changed

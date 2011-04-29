@@ -24,13 +24,17 @@ module BrighterPlanet
     
     # services
     autoload :EmissionEstimateService, 'brighter_planet_billing/emission_estimate_service'
+    autoload :ReferenceDataService, 'brighter_planet_billing/reference_data_service'
     
     include ::Singleton
     
     class ReportedExceptionToHoptoad < RuntimeError; end
     
     def self.services
-      [ emission_estimate_service ]
+      [
+        emission_estimate_service,
+        reference_data_service
+      ]
     end
     
     def self.keys
@@ -39,6 +43,10 @@ module BrighterPlanet
     
     def self.emission_estimate_service
       EmissionEstimateService.instance
+    end
+    
+    def self.reference_data_service
+      ReferenceDataService.instance
     end
     
     def self.config
