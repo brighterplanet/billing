@@ -4,12 +4,15 @@ module BrighterPlanet
     #
     # e.g. Resque.enqueue BrighterPlanet::Billing::Synchronization
     class Synchronization
-      @queue = :high
-      
       class << self
         def perform
           ActiveRecord::Base.connection.reconnect!
           Billing.synchronize
+        end
+        
+        attr_writer :queue
+        def queue
+          @queue || :high
         end
       end
     end
