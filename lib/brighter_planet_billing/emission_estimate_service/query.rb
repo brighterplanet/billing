@@ -19,6 +19,7 @@ module BrighterPlanet
         attr_accessor :compliance
         attr_accessor :emitter
         attr_accessor :emission
+        attr_accessor :input_interpretation
         
         attr_reader :timeframe_from
         attr_reader :timeframe_to
