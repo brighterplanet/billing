@@ -81,6 +81,7 @@ module BrighterPlanet
       attr_accessor :hoptoad_error_id
       attr_accessor :guid
       attr_accessor :async
+      attr_accessor :callback
 
       attr_writer :params
       def params
