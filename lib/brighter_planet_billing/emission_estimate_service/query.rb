@@ -16,18 +16,9 @@ module BrighterPlanet
         attr_accessor :color
         attr_accessor :cm1_version
         attr_accessor :emitter_version
-        
         attr_accessor :compliance
-
-        attr_writer :emitter
-        def emitter
-          @emitter || @emitter_common_name.try(:camelcase)
-        end
-        
-        attr_writer :emission
-        def emission
-          @emission || @output_params.try(:symbolize_keys).try(:[], :emission)
-        end
+        attr_accessor :emitter
+        attr_accessor :emission
         
         attr_reader :timeframe_from
         attr_reader :timeframe_to
