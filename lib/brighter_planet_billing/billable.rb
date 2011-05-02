@@ -79,6 +79,8 @@ module BrighterPlanet
       attr_accessor :format
       attr_accessor :url
       attr_accessor :hoptoad_error_id
+      attr_accessor :guid
+      attr_accessor :async
 
       attr_writer :params
       def params
