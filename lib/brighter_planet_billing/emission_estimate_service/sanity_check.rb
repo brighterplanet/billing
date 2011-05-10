@@ -19,8 +19,8 @@ module BrighterPlanet
         end
         
         def run
-          Billing.emission_estimate_service.queries.top_values(50, :params, selector.merge(:key => key)).each do |params|
-            Billing.emission_estimate_service.queries.sample(:params => params, :key => key).billables.each do |query|
+          Billing.instance.emission_estimate_service.queries.top_values(50, :params, selector.merge(:key => key)).each do |params|
+            Billing.instance.emission_estimate_service.queries.sample(:params => params, :key => key).billables.each do |query|
               Check.new(host, HistoricalResponse.new(query)).run
             end
           end

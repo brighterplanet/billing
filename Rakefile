@@ -16,8 +16,8 @@ task :setup do
   $LOAD_PATH.unshift(File.dirname(__FILE__))
   $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
   require 'brighter_planet_billing'
-  BrighterPlanet::Billing.config.disable_caching = true
-  BrighterPlanet::Billing.config.disable_hoptoad = true
+  BrighterPlanet.billing.config.disable_caching = true
+  BrighterPlanet.billing.config.disable_hoptoad = true
 end
 
 # stats
@@ -25,11 +25,11 @@ end
 namespace :index do
   task :list => :setup do
     require 'pp'
-    PP.pp BrighterPlanet::Billing.authoritative_store.index_information(ENV['S'] || 'EmissionEstimateService'), $stderr
+    PP.pp BrighterPlanet.billing.authoritative_store.index_information(ENV['S'] || 'EmissionEstimateService'), $stderr
   end
 
   task :create => :setup do
-    BrighterPlanet::Billing.authoritative_store.create_indexes(ENV['S'] || 'EmissionEstimateService')
+    BrighterPlanet.billing.authoritative_store.create_indexes(ENV['S'] || 'EmissionEstimateService')
   end
 end
 
@@ -39,13 +39,13 @@ namespace :emission_estimate_service do
     BrighterPlanet.metadata.emitters.each do |emitter|
       puts
       puts emitter
-      puts BrighterPlanet::Billing.authoritative_store.update('EmissionEstimateService', {:emitter_common_name=>emitter.underscore, :emitter=>{'$exists'=>false}}, {'$set'=>{:emitter=>emitter}}, :safe => true, :upsert => false, :multi => true)
+      puts BrighterPlanet.billing.authoritative_store.update('EmissionEstimateService', {:emitter_common_name=>emitter.underscore, :emitter=>{'$exists'=>false}}, {'$set'=>{:emitter=>emitter}}, :safe => true, :upsert => false, :multi => true)
     end
   end
   
   task :clean2 => :setup do
     count = 0
-    BrighterPlanet::Billing.emission_estimate_service.queries.stream({:input_params=>{'$exists'=>true}}) do |query|
+    BrighterPlanet.billing.emission_estimate_service.queries.stream({:input_params=>{'$exists'=>true}}) do |query|
       changed = false
       # if emitter_common_name = query.instance_variable_get(:@emitter_common_name) and query.emitter != emitter_common_name.camelcase
       #   query.emitter = emitter_common_name.camelcase

@@ -1,6 +1,6 @@
 # http://stackoverflow.com/questions/5723889/how-can-i-stringify-a-bson-object-inside-of-a-mongodb-map-function
 # http://stackoverflow.com/questions/5724086/why-is-mongodb-treating-these-two-keys-as-they-same
-# Billing.storage.distinct(service.name, field, selector)
+# Billing.instance.storage.distinct(service.name, field, selector)
 module BrighterPlanet
   class Billing
     class Billable

@@ -35,42 +35,42 @@ module BrighterPlanet
     
     class ReportedExceptionToHoptoad < RuntimeError; end
     
-    def self.services
+    def services
       [
         emission_estimate_service,
         reference_data_service
       ]
     end
     
-    def self.keys
+    def keys
       Key
     end
     
-    def self.emission_estimate_service
+    def emission_estimate_service
       EmissionEstimateService.instance
     end
     
-    def self.reference_data_service
+    def reference_data_service
       ReferenceDataService.instance
     end
     
-    def self.config
+    def config
       Config.instance
     end
     
-    def self.storage
+    def storage
       Storage.instance
     end
     
-    def self.cache
+    def cache
       Cache.instance
     end
     
-    def self.authoritative_store
+    def authoritative_store
       AuthoritativeStore.instance
     end
     
-    def self.setup
+    def setup
       Cache::Document.create_table
       ::HoptoadNotifier.configure do |hoptoad_config|
         unless hoptoad_config.ignore.include? ::BrighterPlanet::Billing::ReportedExceptionToHoptoad
@@ -79,15 +79,11 @@ module BrighterPlanet
       end
     end
     
-    def self.generate_execution_id
-      ::ActiveSupport::SecureRandom.hex 20
-    end
-    
-    def self.synchronized?
+    def synchronized?
       storage.synchronized?
     end
     
-    def self.synchronize
+    def synchronize
       storage.synchronize
     end
   end

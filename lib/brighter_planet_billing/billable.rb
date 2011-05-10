@@ -21,7 +21,7 @@ module BrighterPlanet
         end
       
         def find_one(selector, opts = {})
-          if doc = Billing.storage.find_one(service.name, selector, opts)
+          if doc = Billing.instance.storage.find_one(service.name, selector, opts)
             new doc
           end
         end
@@ -31,18 +31,18 @@ module BrighterPlanet
         def count(*args)
           selector = args[0] || {}
           opts = args[1] || {}
-          Billing.storage.count service.name, selector, opts
+          Billing.instance.storage.count service.name, selector, opts
         end
 
         # Sort of like #each with finder args (selector and opts)
         def stream(selector, opts = {})
-          Billing.storage.find(service.name, selector, opts).each do |doc|
+          Billing.instance.storage.find(service.name, selector, opts).each do |doc|
             yield new(doc)
           end
         end
         
         def map_reduce(m, r, opts = {}, &blk)
-          Billing.storage.map_reduce service.name, m, r, opts, &blk
+          Billing.instance.storage.map_reduce service.name, m, r, opts, &blk
         end
 
         def sample(attrs = {})
@@ -107,7 +107,7 @@ module BrighterPlanet
       end
 
       def save
-        Billing.storage.save_execution service.name, execution_id, to_hash
+        Billing.instance.storage.save_execution service.name, execution_id, to_hash
       end
       
       def to_hash(*)
@@ -115,7 +115,7 @@ module BrighterPlanet
       end
       
       def bill(&blk)
-        self.execution_id = Billing.generate_execution_id
+        self.execution_id = ::ActiveSupport::SecureRandom.hex 20
         now = ::Time.now
         self.year = now.year
         self.month = now.month
@@ -124,7 +124,7 @@ module BrighterPlanet
         self.realtime = ::Benchmark.realtime { blk.call self } # where the magic happens
         self.succeeded = true
       rescue ::Exception => exception
-        if Billing.config.disable_hoptoad or Billing.config.allowed_exceptions.any? { |exception_class| exception.is_a? exception_class }
+        if Billing.instance.config.disable_hoptoad or Billing.instance.config.allowed_exceptions.any? { |exception_class| exception.is_a? exception_class }
           raise exception
         else
           if respond_to?(:gather_hoptoad_debugging_data) and hoptoad_error_id = ::HoptoadNotifier.notify_or_ignore(exception, gather_hoptoad_debugging_data)

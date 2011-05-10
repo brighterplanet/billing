@@ -19,7 +19,7 @@ module BrighterPlanet
         until synchronized?
           document = Document.untried.first
           begin
-            Billing.authoritative_store.save_execution document.service_name, document.execution_id, document.content
+            Billing.instance.authoritative_store.save_execution document.service_name, document.execution_id, document.content
             document.destroy
           rescue ::Exception => exception
             $stderr.puts exception.inspect

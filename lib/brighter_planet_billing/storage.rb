@@ -14,7 +14,7 @@ module BrighterPlanet
       delegate :synchronize, :to => :cache
       
       def save_execution(service_name, execution_id, doc)
-        if Billing.config.disable_caching?
+        if Billing.instance.config.disable_caching?
           authoritative_store.save_execution service_name, execution_id, doc
         else
           cache.save_execution service_name, execution_id, doc
@@ -24,11 +24,11 @@ module BrighterPlanet
       private
       
       def authoritative_store
-        Billing.authoritative_store
+        Billing.instance.authoritative_store
       end
       
       def cache
-        Billing.cache
+        Billing.instance.cache
       end
     end
   end

@@ -100,13 +100,13 @@ module BrighterPlanet
       private
 
       def connection
-        @connection ||= ::Mongo::Connection.new Billing.config.mongo_host, Billing.config.mongo_port
+        @connection ||= ::Mongo::Connection.new Billing.instance.config.mongo_host, Billing.instance.config.mongo_port
       end
       
       def db
         return @db if @db.is_a? ::Mongo::DB
-        @db = connection.db Billing.config.mongo_database
-        @db.authenticate Billing.config.mongo_username, Billing.config.mongo_password
+        @db = connection.db Billing.instance.config.mongo_database
+        @db.authenticate Billing.instance.config.mongo_username, Billing.instance.config.mongo_password
         @db.strict = true
         @db
       end

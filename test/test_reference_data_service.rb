@@ -2,7 +2,7 @@ require 'helper'
 
 class TestReferenceDataService < Test::Unit::TestCase
   def test_000_bill_download
-    BrighterPlanet::Billing.reference_data_service.bill do |download|
+    BrighterPlanet.billing.reference_data_service.bill do |download|
       download.remote_ip = '1.1.1.1'
       download.resource = 'Airline'
       download.format = :csv

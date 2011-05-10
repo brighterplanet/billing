@@ -4,8 +4,8 @@ module BrighterPlanet
     class Key
       class << self
         def all
-          Billing.services.map do |service|
-            Billing.storage.distinct(service.name, :key).map do |key|
+          Billing.instance.services.map do |service|
+            Billing.instance.storage.distinct(service.name, :key).map do |key|
               new key.to_s
             end
           end.flatten.uniq
