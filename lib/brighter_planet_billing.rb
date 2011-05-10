@@ -13,6 +13,10 @@ end
 require 'hoptoad_notifier'
 
 module BrighterPlanet
+  def self.billing
+    Billing.instance
+  end
+  
   class Billing
     autoload :Config, 'brighter_planet_billing/config'
     autoload :Storage, 'brighter_planet_billing/storage'
