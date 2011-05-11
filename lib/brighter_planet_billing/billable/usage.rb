@@ -28,9 +28,9 @@ module BrighterPlanet
         include ToCSV
         
         def write_csv(f, options = {})
-          f.puts [ 'date', 'count' ].to_csv
-          each do |date, count|
-            f.puts [ date, count ].to_csv
+          f.puts [ 'time', 'count' ].to_csv
+          each do |time, count|
+            f.puts [ time, count ].to_csv
           end
         end
       end

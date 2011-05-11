@@ -29,9 +29,9 @@ module BrighterPlanet
         include ToCSV
 
         def write_csv(f, options = {})
-          f.puts [ 'date', 'mean', 'standard_deviation' ].to_csv
-          each do |date, mean, standard_deviation|
-            f.puts [ date, mean, standard_deviation ].to_csv
+          f.puts [ 'time', 'mean', 'standard_deviation' ].to_csv
+          each do |time, mean, standard_deviation|
+            f.puts [ time, mean, standard_deviation ].to_csv
           end
         end
       end
