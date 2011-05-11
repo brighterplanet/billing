@@ -20,11 +20,9 @@ module BrighterPlanet
         end
 
         def each
-          moment = start_at
-          while moment < end_at
-            mean, standard_deviation = parent.sample(:selector => selector.merge(:started_at => { '$gte' => moment, '$lt' => (moment + precision) })).mean_and_standard_deviation(field)
-            yield [ moment.dup, mean, standard_deviation ]
-            moment += precision
+          each_moment do |moment, moment_selector|
+            mean, standard_deviation = parent.sample(:selector => selector.merge(:started_at => moment_selector)).mean_and_standard_deviation(field)
+            yield [ moment, mean, standard_deviation ]
           end
         end
 

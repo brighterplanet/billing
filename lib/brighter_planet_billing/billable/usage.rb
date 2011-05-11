@@ -19,11 +19,9 @@ module BrighterPlanet
         end
 
         def each
-          moment = start_at
-          while moment < end_at
-            count = parent.count(selector.merge(:started_at => { '$gte' => moment, '$lt' => (moment + precision) }))
-            yield [moment.dup, count]
-            moment += precision
+          each_moment do |moment, moment_selector|
+            count = parent.count selector.merge(:started_at => moment_selector)
+            yield [moment, count]
           end
         end
         

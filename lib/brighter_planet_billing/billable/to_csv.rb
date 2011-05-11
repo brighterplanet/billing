@@ -19,8 +19,8 @@ module BrighterPlanet
           case value
           when ::Hash, ::Array
             value.to_json.gsub(%{"}, %{'})
-          when ::Time
-            value.to_formatted_s(:db)
+          when ::Time, ::Date
+            value.to_s :db
           else
             value
           end

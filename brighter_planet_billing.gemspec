@@ -27,6 +27,7 @@ Gem::Specification.new do |s|
     s.add_dependency 'fastercsv'
     s.add_dependency 'SystemTimer'
   end
+  s.add_dependency 'to_regexp'
   s.add_dependency 'thor'
   s.add_dependency 'eat'
   s.add_dependency 'timeframe'
