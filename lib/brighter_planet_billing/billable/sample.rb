@@ -94,8 +94,8 @@ module BrighterPlanet
         def vector(field)
           ary = []
           each do |billable|
-            if datapoint = billable.send(field).to_f
-              ary.push datapoint
+            if datapoint = billable.send(field)
+              ary.push datapoint.to_f
             end
           end
           ary.to_scale
