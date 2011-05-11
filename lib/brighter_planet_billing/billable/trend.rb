@@ -11,27 +11,31 @@ module BrighterPlanet
         # attrs
         # * field
         # * selector
+        # * stats
         # # start_at / end_at / hours / days
         def initialize(parent, attrs = {})
           @parent = parent
           attrs.each do |k, v|
-            instance_variable_set "@#{k}", v
+            instance_variable_set("@#{k}", v) unless v.nil?
           end
+        end
+
+        def stats
+          @stats || [ :n_valid, :mean, :sd, :range ]
         end
 
         def each
           each_moment do |moment, moment_selector|
-            mean, standard_deviation = parent.sample(:selector => selector.merge(:started_at => moment_selector)).mean_and_standard_deviation(field)
-            yield [ moment, mean, standard_deviation ]
+            yield [ moment, parent.sample(:selector => selector.merge(:started_at => moment_selector)).stats(field, *stats).values ]
           end
         end
 
         include ToCSV
 
         def write_csv(f, options = {})
-          f.puts [ 'time', 'mean', 'standard_deviation' ].to_csv
-          each do |time, mean, standard_deviation|
-            f.puts [ time, mean, standard_deviation ].to_csv
+          f.puts [ 'period_starting', stats ].flatten.to_csv
+          each do |time, stats|
+            f.puts [ period_starting(time), stats ].flatten.to_csv
           end
         end
       end

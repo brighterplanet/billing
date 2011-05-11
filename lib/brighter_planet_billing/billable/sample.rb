@@ -12,7 +12,7 @@ module BrighterPlanet
         def initialize(parent, attrs = {})
           @parent = parent
           attrs.each do |k, v|
-            instance_variable_set "@#{k}", v
+            instance_variable_set("@#{k}", v) unless v.nil?
           end
         end
         
@@ -75,20 +75,14 @@ module BrighterPlanet
         
         # a different set of methods, like if you wanted to run stats in ruby
         
-        def mean(field)
-          vector(field).mean
-        end
-      
-        def standard_deviation(field)
-          vector(field).sd
-        end
-        
-        # faster than doing separately
-        def mean_and_standard_deviation(field)
-          v = vector(field)
-          mean = begin; v.mean; rescue; $!.inspect; end
-          sd = begin; v.sd; rescue; $!.inspect; end
-          [ mean, sd ]
+        # sd, mean, n_valid, range
+        def stats(*args)
+          field = args.shift
+          v = vector field
+          args.inject({}) do |memo, f|
+            memo[f] = begin; v.send(f); rescue; nil; end
+            memo
+          end
         end
         
         def vector(field)

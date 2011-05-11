@@ -3,7 +3,6 @@ module BrighterPlanet
     class Billable
       class Usage
         attr_reader :parent
-        attr_reader :selector
       
         include ::Enumerable
         
@@ -11,12 +10,23 @@ module BrighterPlanet
       
         # attrs
         # * selector
+        # * include_failed (default false)
         def initialize(parent, attrs = {})
           @parent = parent
           attrs.each do |k, v|
-            instance_variable_set "@#{k}", v
+            instance_variable_set("@#{k}", v) unless v.nil?
           end
         end
+        
+        def include_failed?
+          !!@include_failed
+        end
+        
+        def selector_with_failure_exclusion
+          include_failed? ? @selector : @selector.merge(:succeeded => true)
+        end
+        
+        alias :selector :selector_with_failure_exclusion
 
         def each
           each_moment do |moment, moment_selector|
@@ -28,9 +38,9 @@ module BrighterPlanet
         include ToCSV
         
         def write_csv(f, options = {})
-          f.puts [ 'time', 'count' ].to_csv
+          f.puts [ 'period_starting', 'count' ].to_csv
           each do |time, count|
-            f.puts [ time, count ].to_csv
+            f.puts [ period_starting(time), count ].to_csv
           end
         end
       end

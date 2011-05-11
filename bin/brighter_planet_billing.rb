@@ -25,36 +25,40 @@ Hint: eval `./secrets.sh` (get secrets.sh from Seamus)
 Hint: do a "> foo.csv" and import into Excel
 
 High level stuff:
-  #{__FILE__} params --limit 5 --emitter=Flight --key=${TEST_KEY}
+  #{__FILE__} top_params --limit 5 --emitter=Flight --key=${TEST_KEY}
 
 Low-level stuff:
+  #{__FILE__} top --limit=5 --field=params --selector="{ emitter: 'Flight', key: '${TEST_KEY}' }"
   #{__FILE__} sample --limit 5 --fields=emitter started_at params emission --digest params --selector="{ emitter: 'Flight', key: '${TEST_KEY}', 'params.destination_airport': 'MCO' }"
-  #{__FILE__} trend --field=emission --selector="{ emitter: 'Flight', key: '${TEST_KEY}', 'params.destination_airport': 'MCO' }"
+  #{__FILE__} trend --days=5 --field=emission --selector="{ emitter: 'Flight', key: '${TEST_KEY}', 'params.destination_airport': 'MCO' }"
+  #{__FILE__} usage --months=6 --key=${TEST_KEY}
 }
-# TOP
-# #{__FILE__} top --limit=5 --field=params --selector=emitter:Flight key:${TEST_KEY}
       end
       
-      desc "params", "get the top params for a certain emitter and key"
+      desc "top_params", "shortcut to getting the top params for a certain emitter and key"
       method_option :emitter, :type => :string, :required => true
       method_option :key, :type => :string, :required => true
       method_option :limit, :type => :numeric, :default => 5
       method_option :explain, :type => :boolean, :default => false
       method_option :service, :type => :string, :default => 'EmissionEstimateService'
-      def params
+      def top_params
         options = self.options.dup
         ::ENV['BRIGHTER_PLANET_BILLING_EXPLAIN'] = 'true' if options.delete(:explain) == true
-        Billable::Top.new(service.billables, :field => 'params', :selector => options.slice(:emitter, :key), :limit => options[:limit]).each do |p|
-          output = flatten_selector(options.slice(:emitter, :key).merge(:params => p)).inject({}) do |memo, (k, v)|
-            memo[k] = if v.is_a?(::String) and v =~ /\A\s+/
-              %q{/^\s+} + v.lstrip + '/'
-            else
-              v
-            end
-            memo
-          end
-          $stdout.puts output.to_json.gsub(%{"}, %{'})
-        end
+        top_params = Billable::Top.new service_model.billables, :field => 'params', :selector => options.slice(:emitter, :key), :limit => options[:limit]
+        top_params.to_csv $stdout
+      end
+      
+      desc "top", "get the top values for a certain field"
+      method_option :field, :type => :string
+      method_option :selector, :type => :string
+      method_option :limit, :type => :numeric, :default => 5
+      method_option :explain, :type => :boolean, :default => false
+      method_option :service, :type => :string, :default => 'EmissionEstimateService'
+      def top
+        options = self.options.dup
+        ::ENV['BRIGHTER_PLANET_BILLING_EXPLAIN'] = 'true' if options.delete(:explain) == true
+        top = Billable::Top.new service_model.billables, options.slice(:field, :limit).merge(:selector => selector_from_json)
+        top.to_csv $stdout
       end
       
       desc "sample", "get a representative sample based on a query"
@@ -70,30 +74,65 @@ Low-level stuff:
         if ary = options[:fields] and ary.first.include?(',')
           $stderr.puts "WARNING: commas seen in field definition, separate with spaces instead"
         end
-        sample = Billable::Sample.new(service.billables, options.slice(:limit).merge(:selector => selector))
+        sample = Billable::Sample.new service_model.billables, options.slice(:limit).merge(:selector => selector_from_json)
         sample.to_csv $stdout, options.slice(:fields, :digest)
       end
       
-      desc "trend", "get a daily average and standard deviation of a certain field"
+      desc "trend", "get stats of a certain field"
       method_option :field, :type => :string
       method_option :selector, :type => :string
+      method_option :stats, :type => :array, :default => [ :n_valid, :mean, :sd, :range ]
       method_option :explain, :type => :boolean, :default => false
       method_option :service, :type => :string, :default => 'EmissionEstimateService'
+      method_option :period, :type => :string
+      method_option :start_at, :type => :string
+      method_option :end_at, :type => :string
+      method_option :hours, :type => :numeric
+      method_option :minutes, :type => :numeric
+      method_option :days, :type => :numeric
+      method_option :months, :type => :numeric
       def trend
         options = self.options.dup
         ::ENV['BRIGHTER_PLANET_BILLING_EXPLAIN'] = 'true' if options.delete(:explain) == true
-        trend = Billable::Trend.new(service.billables, options.slice(:field).merge(:selector => selector))
+        trend = Billable::Trend.new service_model.billables, options.slice(:field, :stats).merge(time_attrs).merge(:selector => selector_from_json)
         trend.to_csv $stdout
+      end
+      
+      desc "usage", "get usage"
+      method_option :key, :type => :string, :required => true
+      method_option :include_failed, :type => :boolean, :default => false
+      method_option :explain, :type => :boolean, :default => false
+      method_option :service, :type => :string, :default => 'EmissionEstimateService'
+      method_option :selector, :type => :string
+      method_option :period, :type => :string
+      method_option :start_at, :type => :string
+      method_option :end_at, :type => :string
+      method_option :hours, :type => :numeric
+      method_option :minutes, :type => :numeric
+      method_option :days, :type => :numeric
+      method_option :months, :type => :numeric
+      def usage
+        options = self.options.dup
+        ::ENV['BRIGHTER_PLANET_BILLING_EXPLAIN'] = 'true' if options.delete(:explain) == true
+        usage = Billable::Usage.new service_model.billables, options.slice(:include_failed).merge(time_attrs).merge(:selector => options.slice(:key).reverse_merge(selector_from_json))
+        usage.to_csv $stdout
       end
       
       private
       
-      def service
+      def time_attrs
+        hsh = options.slice(:hours, :minutes, :days, :months, :start_at, :end_at)
+        hsh[:period] = eval(options[:period]).to_i if options[:period] # 1.minute turns into 60
+        hsh
+      end
+      
+      def service_model
         Billing.const_get(options[:service]).instance
       end
       
-      def selector
-        hsh = ::ActiveSupport::JSON.decode(options[:selector])
+      def selector_from_json
+        return {} if options[:selector].blank?
+        hsh = ::ActiveSupport::JSON.decode options[:selector]
         raise ::ArgumentError, "Selector must be a JSON hash like { foo: 'bar' }" unless hsh.is_a?(::Hash)
         hsh.inject({}) do |memo, (k, v)|
           memo[k] = if v.is_a?(::Date)
@@ -102,27 +141,6 @@ Low-level stuff:
             r
           else
             v
-          end
-          memo
-        end
-      end
-
-#{'params.airline':'AA','params.date':'2009-04-30','params.timeframe':'2009-01-01/2010-01-01','emitter':'Flight','params.origin_airport':'STL','params.destination_airport':'LAX','key':'sdaiosjaoisdjaoisdjaojsd','params.segments_per_trip':'1','params.trips':'1','params.aircraft':'M83'}
-
-      def flatten_selector(selector)
-        selector.inject({}) do |memo, (k, v)|
-          if v.is_a?(::Hash)
-            v.each do |k1, v1|
-              if v1.is_a?(::Hash) # maybe i could rewrite this to be recursive... as it is, 2 levels seems enough
-                v1.each do |k11, v11|
-                  memo["#{k}.#{k1}.#{k11}"] = v11
-                end
-              else
-                memo["#{k}.#{k1}"] = v1
-              end
-            end
-          else
-            memo[k] = v
           end
           memo
         end

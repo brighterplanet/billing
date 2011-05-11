@@ -100,7 +100,7 @@ module BrighterPlanet
           if respond_to? "#{k}="
             send "#{k}=", v
           else
-            instance_variable_set "@#{k}", v
+            instance_variable_set("@#{k}", v) unless v.nil?
           end
         end
       end
