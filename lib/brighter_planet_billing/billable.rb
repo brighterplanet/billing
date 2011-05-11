@@ -7,6 +7,7 @@ module BrighterPlanet
       autoload :Sample, 'brighter_planet_billing/billable/sample'
       autoload :Trend, 'brighter_planet_billing/billable/trend'
       autoload :Top, 'brighter_planet_billing/billable/top'
+      autoload :Usage, 'brighter_planet_billing/billable/usage'
 
       class << self
         def service
@@ -55,6 +56,10 @@ module BrighterPlanet
         
         def top(attrs = {})
           Top.new self, attrs
+        end
+        
+        def usage(attrs = {})
+          Usage.new self, attrs
         end
         
         def bill(&blk)

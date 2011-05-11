@@ -24,14 +24,14 @@ Hint: eval `./secrets.sh` (get secrets.sh from Seamus)
 Hint: do a "> foo.csv" and import into Excel
 
 High level stuff:
-  #{__FILE__} params --limit 5 --emitter=Flight --key=${TRIPCARBON_KEY}
+  #{__FILE__} params --limit 5 --emitter=Flight --key=${TEST_KEY}
 
 Low-level stuff:
-  #{__FILE__} sample --limit 5 --fields=emitter started_at params emission --digest params --selector="{ emitter: 'Flight', key: '${TRIPCARBON_KEY}', 'params.destination_airport': 'MCO' }"
-  #{__FILE__} trend --field=emission --selector="{ emitter: 'Flight', key: '${TRIPCARBON_KEY}', 'params.destination_airport': 'MCO' }"
+  #{__FILE__} sample --limit 5 --fields=emitter started_at params emission --digest params --selector="{ emitter: 'Flight', key: '${TEST_KEY}', 'params.destination_airport': 'MCO' }"
+  #{__FILE__} trend --field=emission --selector="{ emitter: 'Flight', key: '${TEST_KEY}', 'params.destination_airport': 'MCO' }"
 }
 # TOP
-# #{__FILE__} top --limit=5 --field=params --selector=emitter:Flight key:${TRIPCARBON_KEY}
+# #{__FILE__} top --limit=5 --field=params --selector=emitter:Flight key:${TEST_KEY}
       end
       
       desc "params", "get the top params for a certain emitter and key"
