@@ -6,10 +6,10 @@ module BrighterPlanet
         attr_reader :selector
       
         include ::Enumerable
+        
+        include TimeAttrs
       
         # attrs
-        # * first_day
-        # * last_day
         # * selector
         def initialize(parent, attrs = {})
           @parent = parent
@@ -18,18 +18,12 @@ module BrighterPlanet
           end
         end
 
-        def first_day
-          (@first_day ||= (::Date.today - 1.month)).to_date
-        end
-        
-        def last_day
-          (@last_day ||= ::Date.today).to_date
-        end
-
         def each
-          (first_day..last_day).each do |date|
-            count = parent.count(selector.merge(:started_at => { '$gte' => date.to_time, '$lt' => date.tomorrow.to_time }))
-            yield [date, count]
+          moment = start_at
+          while moment < end_at
+            count = parent.count(selector.merge(:started_at => { '$gte' => moment, '$lt' => (moment + precision) }))
+            yield [moment.dup, count]
+            moment += precision
           end
         end
         

@@ -5,30 +5,31 @@ module BrighterPlanet
         attr_reader :parent
         attr_reader :field
         attr_reader :selector
-      
+
+        include TimeAttrs
+
         # attrs
         # * field
         # * selector
+        # # start_at / end_at / hours / days
         def initialize(parent, attrs = {})
           @parent = parent
           attrs.each do |k, v|
             instance_variable_set "@#{k}", v
           end
         end
-      
-        def year
-          ::Time.now.year
-        end
-            
+
         def each
-          (Date.today.at_beginning_of_year..Date.today).each do |date|
-            mean, standard_deviation = parent.sample(:selector => selector.merge(:started_at => { '$gte' => date.to_time, '$lt' => date.tomorrow.to_time })).mean_and_standard_deviation(field)
-            yield [ date, mean, standard_deviation ]
+          moment = start_at
+          while moment < end_at
+            mean, standard_deviation = parent.sample(:selector => selector.merge(:started_at => { '$gte' => moment, '$lt' => (moment + precision) })).mean_and_standard_deviation(field)
+            yield [ moment.dup, mean, standard_deviation ]
+            moment += precision
           end
         end
-        
+
         include ToCSV
-        
+
         def write_csv(f, options = {})
           f.puts [ 'date', 'mean', 'standard_deviation' ].to_csv
           each do |date, mean, standard_deviation|

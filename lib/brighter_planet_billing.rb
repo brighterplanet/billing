@@ -3,10 +3,7 @@ require 'stringio'
 require 'active_support'
 require 'active_support/version'
 if ::ActiveSupport::VERSION::MAJOR == 3
-  require 'active_support/core_ext/module/delegation'
-  require 'active_support/core_ext/object'
-  require 'active_support/core_ext/hash'
-  require 'active_support/core_ext/string/inflections'
+  require 'active_support/core_ext'
   require 'active_support/json'
   require 'active_support/secure_random'
 end
@@ -25,15 +22,22 @@ module BrighterPlanet
     autoload :Key, 'brighter_planet_billing/key'
     autoload :Billable, 'brighter_planet_billing/billable'
     autoload :Synchronization, 'brighter_planet_billing/synchronization'
-    autoload :ToCSV, 'brighter_planet_billing/to_csv'
     
     # services
     autoload :EmissionEstimateService, 'brighter_planet_billing/emission_estimate_service'
     autoload :ReferenceDataService, 'brighter_planet_billing/reference_data_service'
-    
+
     include ::Singleton
     
     class ReportedExceptionToHoptoad < RuntimeError; end
+    
+    EXECUTION_ID_LENGTH = 20
+    
+    class << self
+      def generate_execution_id
+        ::ActiveSupport::SecureRandom.hex EXECUTION_ID_LENGTH
+      end
+    end
     
     def services
       [

@@ -19,7 +19,7 @@ module BrighterPlanet
         # using execution_id as a random attribution
         # thanks http://cookbook.mongodb.org/patterns/random-attribute/
         # ('2'*40) corresponds to 1/8 or 12.50% sample
-        RANDOM_ATTRIBUTE_THRESHOLD = '2'*40
+        RANDOM_ATTRIBUTE_THRESHOLD = '2' * Billing::EXECUTION_ID_LENGTH
         
         # 10,000 datapoints should be enough
         LIMIT = 10_000

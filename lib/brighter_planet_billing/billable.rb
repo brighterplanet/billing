@@ -8,6 +8,8 @@ module BrighterPlanet
       autoload :Trend, 'brighter_planet_billing/billable/trend'
       autoload :Top, 'brighter_planet_billing/billable/top'
       autoload :Usage, 'brighter_planet_billing/billable/usage'
+      autoload :TimeAttrs, 'brighter_planet_billing/billable/time_attrs'
+      autoload :ToCSV, 'brighter_planet_billing/billable/to_csv'
 
       class << self
         def service
@@ -120,7 +122,7 @@ module BrighterPlanet
       end
       
       def bill(&blk)
-        self.execution_id = ::ActiveSupport::SecureRandom.hex 20
+        self.execution_id = Billing.generate_execution_id
         now = ::Time.now
         self.year = now.year
         self.month = now.month
