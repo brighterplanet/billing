@@ -65,6 +65,12 @@ module BrighterPlanet
             end
           end
         end
+        
+        def columns
+          [ :"selector_for_top_values_of_#{field}" ]
+        end
+
+        include EachHash
 
         def selector_with_field_existence_checking
           @selector.symbolize_keys.reverse_merge field => { '$exists' => true }#, '$nin' => [ '', nil, {} ]}
@@ -90,10 +96,6 @@ module BrighterPlanet
           EOS
         end
         
-        def columns
-          [ :"selector_for_top_values_of_#{field}" ]
-        end
-
         include ToCSV
 
         def write_csv(f)

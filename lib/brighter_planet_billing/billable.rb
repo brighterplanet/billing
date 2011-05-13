@@ -8,8 +8,11 @@ module BrighterPlanet
       autoload :Trend, 'brighter_planet_billing/billable/trend'
       autoload :Top, 'brighter_planet_billing/billable/top'
       autoload :Usage, 'brighter_planet_billing/billable/usage'
+      
+      # mixins
       autoload :TimeAttrs, 'brighter_planet_billing/billable/time_attrs'
       autoload :ToCSV, 'brighter_planet_billing/billable/to_csv'
+      autoload :EachHash, 'brighter_planet_billing/billable/each_hash'
 
       class << self
         def service

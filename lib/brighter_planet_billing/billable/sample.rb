@@ -43,19 +43,33 @@ module BrighterPlanet
         end
 
         def digest
-          ::Array.wrap @digest
+          ::Array.wrap(@digest).map(&:to_sym)
+        end
+        
+        include ::Enumerable
+        
+        def each
+          parent.stream(selector, :limit => limit) do |billable|
+            yield billable
+          end
         end
         
         def columns
           (@columns || digest.map { |field| "#{field}_DIGEST" } + fields).map(&:to_sym)
+        end
+        
+        # include EachHash
+        def each_hash
+          each do |billable|
+            yield billable.to_hash
+          end
         end
 
         include ToCSV
 
         def write_csv(f)
           first_row = true
-          each do |billable|
-            row = billable.to_hash
+          each_hash do |row| # treating rows as hashes so that we can re-order them
             if first_row
               # if we didn't get fields before, then we'll get them from the first row
               @fields ||= row.keys.sort
@@ -70,14 +84,6 @@ module BrighterPlanet
               end
             end
             f.puts values.to_csv
-          end
-        end
-        
-        include ::Enumerable
-        
-        def each
-          parent.stream(selector, :limit => limit) do |billable|
-            yield billable
           end
         end
         

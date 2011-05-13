@@ -21,14 +21,14 @@ module BrighterPlanet
         end
 
         def stats
-          @stats || [ :n_valid, :mean, :sd, :range ]
+          (@stats || [ :n_valid, :mean, :sd, :range ]).map(&:to_sym)
         end
 
         include ::Enumerable
 
         def each
           each_moment do |moment, moment_selector|
-            yield [ moment, parent.sample(:selector => selector.merge(:started_at => moment_selector)).stats(field, *stats).values ]
+            yield [ moment ] + parent.sample(:selector => selector.merge(:started_at => moment_selector)).stats(field, *stats).values
           end
         end
                 
@@ -36,12 +36,15 @@ module BrighterPlanet
           [ :period_starting, stats ].flatten.map(&:to_sym)
         end
 
+        include EachHash
+
         include ToCSV
 
         def write_csv(f)
           f.puts columns.to_csv
-          each do |time, stats|
-            f.puts [ period_starting(time), stats ].flatten.to_csv
+          each do |row|
+            moment, *stats = row
+            f.puts [ period_starting(moment), stats ].flatten.to_csv
           end
         end
       end

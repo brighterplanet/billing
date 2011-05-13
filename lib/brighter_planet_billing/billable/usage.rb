@@ -39,12 +39,14 @@ module BrighterPlanet
           [ :period_starting, :count ]
         end
         
+        include EachHash
+        
         include ToCSV
         
         def write_csv(f)
           f.puts columns.to_csv
-          each do |time, count|
-            f.puts [ period_starting(time), count ].to_csv
+          each do |moment, count|
+            f.puts [ period_starting(moment), count ].to_csv
           end
         end
       end
