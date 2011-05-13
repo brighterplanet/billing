@@ -118,7 +118,7 @@ module BrighterPlanet
       end
       
       def to_hash(*)
-        instance_values.reject { |k, v| v.nil? }
+        instance_values.reject { |k, v| v.nil? }.symbolize_keys
       end
       
       def bill(&blk)

@@ -47,15 +47,15 @@ module BrighterPlanet
         end
         
         def columns
-          @columns ||= digest.map { |field| "#{field}_DIGEST" } + fields
+          (@columns || digest.map { |field| "#{field}_DIGEST" } + fields).map(&:to_sym)
         end
 
         include ToCSV
 
         def write_csv(f)
           first_row = true
-          each do |doc|
-            row = doc.as_json
+          each do |billable|
+            row = billable.to_hash
             if first_row
               # if we didn't get fields before, then we'll get them from the first row
               @fields ||= row.keys.sort
@@ -63,8 +63,8 @@ module BrighterPlanet
               first_row = false
             end
             values = columns.map do |field|
-              if field.end_with?('_DIGEST')
-                row[field.sub('_DIGEST', '')].hash
+              if field.to_s.end_with?('_DIGEST')
+                row[field.to_s.sub('_DIGEST', '').to_sym].hash
               else
                 as_csv_value row[field]
               end

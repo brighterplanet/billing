@@ -31,9 +31,9 @@ module BrighterPlanet
             yield [ moment, parent.sample(:selector => selector.merge(:started_at => moment_selector)).stats(field, *stats).values ]
           end
         end
-        
+                
         def columns
-          [ 'period_starting', stats ].flatten
+          [ :period_starting, stats ].flatten.map(&:to_sym)
         end
 
         include ToCSV

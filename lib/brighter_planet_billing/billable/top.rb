@@ -91,7 +91,7 @@ module BrighterPlanet
         end
         
         def columns
-          [ "selector_for_top_values_of_#{field}" ]
+          [ :"selector_for_top_values_of_#{field}" ]
         end
 
         include ToCSV

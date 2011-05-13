@@ -36,7 +36,7 @@ module BrighterPlanet
         end
         
         def columns
-          [ 'period_starting', 'count' ]
+          [ :period_starting, :count ]
         end
         
         include ToCSV
