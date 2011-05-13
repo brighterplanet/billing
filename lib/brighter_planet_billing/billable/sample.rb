@@ -5,10 +5,13 @@ module BrighterPlanet
     class Billable
       class Sample
         attr_reader :parent
+        attr_reader :fields
       
         # attrs
         # * selector
         # * limit
+        # * fields
+        # * digest
         def initialize(parent, attrs = {})
           @parent = parent
           attrs.each do |k, v|
@@ -39,24 +42,27 @@ module BrighterPlanet
           [ @limit, LIMIT ].compact.min
         end
 
+        def digest
+          ::Array.wrap @digest
+        end
+        
+        def columns
+          @columns ||= digest.map { |field| "#{field}_DIGEST" } + fields
+        end
+
         include ToCSV
 
-        def write_csv(f, options = {})
+        def write_csv(f)
           first_row = true
-          fields = options[:fields]
           each do |doc|
             row = doc.as_json
             if first_row
-              # if we didn't get fields defined in the options, then we'll get them from the first row
-              fields ||= row.keys.sort
-              # add any digest fields
-              ::Array.wrap(options[:digest]).each do |field|
-                fields.unshift "#{field}_DIGEST"
-              end
-              f.puts fields.to_csv
+              # if we didn't get fields before, then we'll get them from the first row
+              @fields ||= row.keys.sort
+              f.puts columns.to_csv
               first_row = false
             end
-            values = fields.map do |field|
+            values = columns.map do |field|
               if field.end_with?('_DIGEST')
                 row[field.sub('_DIGEST', '')].hash
               else

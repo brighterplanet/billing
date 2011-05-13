@@ -35,10 +35,14 @@ module BrighterPlanet
           end
         end
         
+        def columns
+          [ 'period_starting', 'count' ]
+        end
+        
         include ToCSV
         
-        def write_csv(f, options = {})
-          f.puts [ 'period_starting', 'count' ].to_csv
+        def write_csv(f)
+          f.puts columns.to_csv
           each do |time, count|
             f.puts [ period_starting(time), count ].to_csv
           end

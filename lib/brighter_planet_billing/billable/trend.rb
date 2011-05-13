@@ -29,11 +29,15 @@ module BrighterPlanet
             yield [ moment, parent.sample(:selector => selector.merge(:started_at => moment_selector)).stats(field, *stats).values ]
           end
         end
+        
+        def columns
+          [ 'period_starting', stats ].flatten
+        end
 
         include ToCSV
 
-        def write_csv(f, options = {})
-          f.puts [ 'period_starting', stats ].flatten.to_csv
+        def write_csv(f)
+          f.puts columns.to_csv
           each do |time, stats|
             f.puts [ period_starting(time), stats ].flatten.to_csv
           end

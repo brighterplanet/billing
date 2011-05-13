@@ -89,11 +89,15 @@ module BrighterPlanet
             }
           EOS
         end
+        
+        def columns
+          [ "selector_for_top_values_of_#{field}" ]
+        end
 
         include ToCSV
 
-        def write_csv(f, options = {})
-          f.puts [ "selector_for_top_values_of_#{field}" ].to_csv
+        def write_csv(f)
+          f.puts columns.to_csv
           each do |top_value|
             output = Top.regexpify Top.flatten(selector.merge(field => top_value))
             f.puts [ output.to_json.gsub(%{"}, %{'}) ].to_csv

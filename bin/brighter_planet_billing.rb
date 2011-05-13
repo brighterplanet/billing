@@ -74,8 +74,8 @@ Low-level stuff:
         if ary = options[:fields] and ary.first.include?(',')
           $stderr.puts "WARNING: commas seen in field definition, separate with spaces instead"
         end
-        sample = Billable::Sample.new service_model.billables, options.slice(:limit).merge(:selector => selector_from_json)
-        sample.to_csv $stdout, options.slice(:fields, :digest)
+        sample = Billable::Sample.new service_model.billables, options.slice(:limit, :fields, :digest).merge(:selector => selector_from_json)
+        sample.to_csv $stdout
       end
       
       desc "trend", "get stats of a certain field"

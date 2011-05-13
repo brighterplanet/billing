@@ -29,23 +29,13 @@ module BrighterPlanet
         # example arguments
         # to_csv()                            => returns a string
         # to_csv($stdout)                     => writes to $stdout
-        # to_csv(:foo => :bar)                => pass the option :foo => :bar
-        # to_csv($stdout, :foo => :bar)       => ditto, to $stdout
-        def to_csv(*args)
-          f = if args.first.respond_to?(:puts)
-            args.first
-          else
+        def to_csv(f = :as_string)
+          if f == :as_string
             as_string = true
-            ::StringIO.new
-          end
-      
-          options = if args.last.is_a?(::Hash)
-            args.last.symbolize_keys
-          else
-            {}
+            f = ::StringIO.new
           end
 
-          write_csv f, options
+          write_csv f
                 
           if as_string
             f.rewind

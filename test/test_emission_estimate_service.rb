@@ -4,7 +4,7 @@ class TestEmissionEstimateService < Test::Unit::TestCase
   if ENV['TEST_KEY']
     def test_001_sample_query_results
       flight_sample = BrighterPlanet.billing.emission_estimate_service.queries.sample(:selector => {:emitter => 'Flight', :key => ENV['TEST_KEY']})
-      mean, standard_deviation = flight_sample.mean_and_standard_deviation(:emission)
+      mean, standard_deviation = flight_sample.stats(:emission, :mean, :sd)
       # $stderr.puts mean
       # $stderr.puts standard_deviation
       assert (100..2000).include?(mean)
@@ -19,7 +19,7 @@ class TestEmissionEstimateService < Test::Unit::TestCase
     def test_003_average_emission_for_top_param
       top_params_for_example_flights.each do |p|
         flight_sample = BrighterPlanet.billing.emission_estimate_service.queries.sample(:selector => {:params => p, :key => ENV['TEST_KEY']})
-        mean, standard_deviation = flight_sample.mean_and_standard_deviation(:emission)
+        mean, standard_deviation = flight_sample.stats(:emission, :mean, :sd)
         # $stderr.puts mean
         # $stderr.puts standard_deviation
         assert (100..2000).include?(mean)
