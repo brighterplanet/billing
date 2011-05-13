@@ -24,6 +24,8 @@ module BrighterPlanet
           @stats || [ :n_valid, :mean, :sd, :range ]
         end
 
+        include ::Enumerable
+
         def each
           each_moment do |moment, moment_selector|
             yield [ moment, parent.sample(:selector => selector.merge(:started_at => moment_selector)).stats(field, *stats).values ]

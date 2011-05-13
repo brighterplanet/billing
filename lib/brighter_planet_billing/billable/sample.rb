@@ -73,6 +73,8 @@ module BrighterPlanet
           end
         end
         
+        include ::Enumerable
+        
         def each
           parent.stream(selector, :limit => limit) do |billable|
             yield billable
