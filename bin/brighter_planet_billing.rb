@@ -137,7 +137,7 @@ Low-level stuff:
         hsh.inject({}) do |memo, (k, v)|
           memo[k] = if v.is_a?(::Date)
             v.to_time
-          elsif r = v.to_regexp
+          elsif v.respond_to?(:to_regexp) and r = v.to_regexp
             r
           else
             v
