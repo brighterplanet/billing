@@ -28,7 +28,7 @@ class TestEmissionEstimateService < Test::Unit::TestCase
     end
     
     def test_004_usage
-      usage = BrighterPlanet.billing.emission_estimate_service.queries.usage(:start_at => Time.parse('2011-04-01'), :end_at => Time.parse('2011-05-01'), :selector => { :key => ENV['TEST_KEY']})
+      usage = BrighterPlanet.billing.emission_estimate_service.queries.usage(:start_at => Time.parse('2011-04-01'), :end_at => Time.parse('2011-05-01'), :period => 5.days, :selector => { :key => ENV['TEST_KEY']})
       assert(usage.select { |date, usage| usage > 100 }.length > 3)
     end
   end
