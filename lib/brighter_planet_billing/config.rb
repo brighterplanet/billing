@@ -19,6 +19,16 @@ module BrighterPlanet
         @mongo_port || ::ENV['BRIGHTER_PLANET_BILLING_MONGO_PORT']
       end
       
+      attr_writer :mongo_arbiter_host
+      def mongo_arbiter_host
+        @mongo_arbiter_host || ::ENV['BRIGHTER_PLANET_BILLING_MONGO_ARBITER_HOST'] || 27017
+      end
+      
+      attr_writer :mongo_arbiter_port
+      def mongo_arbiter_port
+        @mongo_arbiter_port || ::ENV['BRIGHTER_PLANET_BILLING_MONGO_ARBITER_PORT'] || 27017
+      end
+      
       attr_writer :mongo_database
       def mongo_database
         @mongo_database || ::ENV['BRIGHTER_PLANET_BILLING_MONGO_DATABASE']
