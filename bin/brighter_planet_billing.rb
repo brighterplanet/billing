@@ -68,13 +68,21 @@ Low-level stuff:
       method_option :fields, :type => :array
       method_option :explain, :type => :boolean, :default => false
       method_option :service, :type => :string, :default => 'EmissionEstimateService'
+      method_option :period, :type => :string
+      method_option :start_at, :type => :string
+      method_option :end_at, :type => :string
+      method_option :hours, :type => :numeric
+      method_option :minutes, :type => :numeric
+      method_option :days, :type => :numeric
+      method_option :weeks, :type => :numeric
+      method_option :months, :type => :numeric
       def sample
         options = self.options.dup
         ::ENV['BRIGHTER_PLANET_BILLING_EXPLAIN'] = 'true' if options.delete(:explain) == true
         if ary = options[:fields] and ary.first.include?(',')
           $stderr.puts "WARNING: commas seen in field definition, separate with spaces instead"
         end
-        sample = Billable::Sample.new service_model.billables, options.slice(:limit, :fields, :digest).merge(:selector => selector_from_json)
+        sample = Billable::Sample.new service_model.billables, options.slice(:limit, :fields, :digest).merge(time_attrs).merge(:selector => selector_from_json)
         sample.to_csv $stdout
       end
       

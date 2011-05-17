@@ -6,7 +6,7 @@ module BrighterPlanet
       class Sample
         attr_reader :parent
         attr_reader :fields
-      
+
         # attrs
         # * selector
         # * limit
@@ -18,26 +18,33 @@ module BrighterPlanet
             instance_variable_set("@#{k}", v) unless v.nil?
           end
         end
-        
+
         # using execution_id as a random attribution
         # thanks http://cookbook.mongodb.org/patterns/random-attribute/
         # ('2'*40) corresponds to 1/8 or 12.50% sample
         RANDOM_ATTRIBUTE_THRESHOLD = '2' * Billing::EXECUTION_ID_LENGTH
-        
+
         # 10,000 datapoints should be enough
         LIMIT = 10_000
 
+        def selector
+          @selector.symbolize_keys
+        end
+
         def selector_with_random_attribute_threshold
-          with_random_attribute_threshold = @selector.symbolize_keys.merge :execution_id => { '$lte' => RANDOM_ATTRIBUTE_THRESHOLD }
+          with_random_attribute_threshold = selector_without_random_attribute_threshold.merge :execution_id => { '$lte' => RANDOM_ATTRIBUTE_THRESHOLD }
           if parent.count(with_random_attribute_threshold) > 1
             with_random_attribute_threshold
           else
-            @selector
+            selector_without_random_attribute_threshold
           end
         end
         
-        alias :selector :selector_with_random_attribute_threshold
-      
+        include TimeAttrs
+        
+        alias_method_chain :selector, :time_attrs
+        alias_method_chain :selector, :random_attribute_threshold
+        
         def limit
           [ @limit, LIMIT ].compact.min
         end
@@ -45,19 +52,19 @@ module BrighterPlanet
         def digest
           ::Array.wrap(@digest).map(&:to_sym)
         end
-        
+
         include ::Enumerable
-        
+
         def each
           parent.stream(selector, :limit => limit) do |billable|
             yield billable
           end
         end
-        
+
         def columns
           (@columns || digest.map { |field| "#{field}_DIGEST" } + fields).map(&:to_sym)
         end
-        
+
         # include EachHash
         def each_hash
           each do |billable|
@@ -86,9 +93,9 @@ module BrighterPlanet
             f.puts values.to_csv
           end
         end
-        
+
         # a different set of methods, like if you wanted to run stats in ruby
-        
+
         # sd, mean, n_valid, range
         def stats(*args)
           field = args.shift
@@ -98,7 +105,7 @@ module BrighterPlanet
             memo
           end
         end
-        
+
         def vector(field)
           ary = []
           each do |billable|

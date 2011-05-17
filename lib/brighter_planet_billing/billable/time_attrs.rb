@@ -91,6 +91,14 @@ module BrighterPlanet
         def now
           @now || ::Time.now
         end
+        
+        def selector_with_time_attrs
+          if (@start_at or @end_at or @minutes or @hours or @days or @weeks or @months) and selector_without_time_attrs[:started_at].nil?
+            selector_without_time_attrs.merge :started_at => { '$gte' => start_at, '$lt' => end_at }
+          else
+            selector_without_time_attrs
+          end
+        end
       end
     end
   end
