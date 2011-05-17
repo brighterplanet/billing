@@ -90,6 +90,7 @@ Low-level stuff:
       method_option :hours, :type => :numeric
       method_option :minutes, :type => :numeric
       method_option :days, :type => :numeric
+      method_option :weeks, :type => :numeric
       method_option :months, :type => :numeric
       def trend
         options = self.options.dup
@@ -110,6 +111,7 @@ Low-level stuff:
       method_option :hours, :type => :numeric
       method_option :minutes, :type => :numeric
       method_option :days, :type => :numeric
+      method_option :weeks, :type => :numeric
       method_option :months, :type => :numeric
       def usage
         options = self.options.dup
@@ -121,7 +123,7 @@ Low-level stuff:
       private
       
       def time_attrs
-        hsh = options.slice(:hours, :minutes, :days, :months, :start_at, :end_at)
+        hsh = options.slice(:hours, :minutes, :days, :weeks, :months, :start_at, :end_at)
         hsh[:period] = eval(options[:period]).to_i if options[:period] # 1.minute turns into 60
         hsh
       end

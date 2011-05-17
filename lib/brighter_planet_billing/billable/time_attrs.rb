@@ -11,6 +11,8 @@ module BrighterPlanet
               :hour
             when 1.day
               :day
+            when 1.week
+              :week
             when 1.month
               :month
             else
@@ -26,6 +28,9 @@ module BrighterPlanet
           elsif @days.present?
             @chosen_period = :day
             1.day
+          elsif @weeks.present?
+            @chosen_period = :week
+            1.week
           else
             @chosen_period = :month
             1.month
@@ -41,13 +46,15 @@ module BrighterPlanet
           return @start_at.to_time if @start_at.present?
           case chosen_period
           when :minute
-            now - @minutes.to_i.minute
+            now - @minutes.to_f.minute
           when :hour
-            now - @hours.to_i.hour
+            now - @hours.to_f.hour
           when :day
-            now - @days.to_i.day
+            now - @days.to_f.day
+          when :week
+            now - @weeks.to_f.week
           when :month
-            (now - @months.to_i.month).at_beginning_of_month
+            (now - @months.to_f.month).at_beginning_of_month
           else
             now - (4*period) # 4 day ago, 4 minute ago, etc.
           end
