@@ -38,7 +38,7 @@ Low-level stuff:
       desc "top_params", "shortcut to getting the top params for a certain emitter and key"
       method_option :emitter, :type => :string, :required => true
       method_option :key, :type => :string, :required => true
-      method_option :limit, :type => :numeric, :default => 5
+      method_option :limit, :type => :numeric
       method_option :explain, :type => :boolean, :default => false
       method_option :service, :type => :string, :default => 'EmissionEstimateService'
       def top_params
@@ -51,7 +51,7 @@ Low-level stuff:
       desc "top", "get the top values for a certain field"
       method_option :field, :type => :string
       method_option :selector, :type => :string
-      method_option :limit, :type => :numeric, :default => 5
+      method_option :limit, :type => :numeric
       method_option :explain, :type => :boolean, :default => false
       method_option :service, :type => :string, :default => 'EmissionEstimateService'
       def top
@@ -62,7 +62,7 @@ Low-level stuff:
       end
       
       desc "sample", "get a representative sample based on a query"
-      method_option :limit, :type => :numeric, :default => Billable::Sample::LIMIT
+      method_option :limit, :type => :numeric
       method_option :digest, :type => :array, :description => "Include a digest (hashcode) for these columns to make it easy to sort. Useful for columns that contain hashes."
       method_option :selector, :type => :string
       method_option :fields, :type => :array
@@ -81,7 +81,7 @@ Low-level stuff:
       desc "trend", "get stats of a certain field"
       method_option :field, :type => :string
       method_option :selector, :type => :string
-      method_option :stats, :type => :array, :default => [ :n_valid, :mean, :sd, :range ]
+      method_option :stats, :type => :array, :default => Billable::Trend::DEFAULT_STATS
       method_option :explain, :type => :boolean, :default => false
       method_option :service, :type => :string, :default => 'EmissionEstimateService'
       method_option :period, :type => :string

@@ -20,8 +20,10 @@ module BrighterPlanet
           end
         end
 
+        DEFAULT_STATS = [ :n_valid, :mean, :sd, :range ]
+
         def stats
-          (@stats || [ :n_valid, :mean, :sd, :range ]).map(&:to_sym)
+          (@stats || DEFAULT_STATS).map(&:to_sym)
         end
 
         include ::Enumerable
