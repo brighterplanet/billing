@@ -59,10 +59,9 @@ module BrighterPlanet
         include ::Enumerable
 
         def each
-          parent.map_reduce(map_function, reduce_function, :query => selector_with_field_existence_checking) do |tmp_collection|
-            tmp_collection.find({}, :limit => limit, :sort => [['value', ::Mongo::DESCENDING]]).each do |doc|
-              yield doc['_id']
-            end
+          cache! if cache.empty?
+          cache.each do |doc|
+            yield doc
           end
         end
         
@@ -104,6 +103,20 @@ module BrighterPlanet
             output = Top.regexpify Top.flatten(selector.merge(field => top_value))
             f.puts [ output.to_json.gsub(%{"}, %{'}) ].to_csv
           end
+        end
+        
+        private
+        
+        def cache
+          @cache ||= []
+        end
+                
+        def cache!
+          output_collection = parent.map_reduce(map_function, reduce_function, :query => selector_with_field_existence_checking)
+          output_collection.find({}, :limit => limit, :sort => [['value', ::Mongo::DESCENDING]]).each do |doc|
+            cache.push doc['_id']
+          end
+          output_collection.drop
         end
       end
     end

@@ -44,12 +44,11 @@ module BrighterPlanet
         end
       end
 
-      def map_reduce(service_name, m, r, opts = {}, &blk)
-        tmp_collection_name = ::ActiveSupport::SecureRandom.hex 5
-        tmp_collection = collection_on_primary(service_name).map_reduce(m, r, opts.symbolize_keys.merge(:out => tmp_collection_name))
-        blk.call tmp_collection
-      ensure
-        tmp_collection.try :drop
+      def map_reduce(service_name, m, r, opts = {})
+        output_collection = collection(service_name).map_reduce(m, r, opts.symbolize_keys.merge(:out => rand(10_000_000).to_s))
+        # make sure everything is synced
+        db.get_last_error(:w => 2).inspect
+        output_collection
       end
 
       def save_execution(service_name, execution_id, doc)
@@ -117,26 +116,7 @@ module BrighterPlanet
         service_name = service_name.to_s
         @collection ||= {}
         return @collection[service_name] if @collection[service_name].is_a? ::Mongo::Collection
-        @collection[service_name] = db.collection service_name.to_s
-      end
-
-      def connection_to_primary
-        @connection_to_primary ||= ::Mongo::Connection.new Billing.instance.config.mongo_host, Billing.instance.config.mongo_port
-      end
-
-      def db_on_primary
-        return @db_on_primary if @db_on_primary.is_a? ::Mongo::DB
-        @db_on_primary = connection_to_primary.db Billing.instance.config.mongo_database
-        @db_on_primary.authenticate Billing.instance.config.mongo_username, Billing.instance.config.mongo_password
-        @db_on_primary.strict = true
-        @db_on_primary
-      end
-
-      def collection_on_primary(service_name)
-        service_name = service_name.to_s
-        @collection_on_primary ||= {}
-        return @collection_on_primary[service_name] if @collection_on_primary[service_name].is_a? ::Mongo::Collection
-        @collection_on_primary[service_name] = db_on_primary.collection service_name.to_s
+        @collection[service_name] = db.collection service_name
       end
     end
   end

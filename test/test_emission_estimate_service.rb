@@ -4,26 +4,22 @@ class TestEmissionEstimateService < Test::Unit::TestCase
   if ENV['TEST_KEY']
     def test_001_sample_query_results
       flight_sample = BrighterPlanet.billing.emission_estimate_service.queries.sample(:selector => {:emitter => 'Flight', :key => ENV['TEST_KEY']})
-      mean, standard_deviation = flight_sample.stats(:emission, :mean, :sd)
-      # $stderr.puts mean
-      # $stderr.puts standard_deviation
-      assert (100..2000).include?(mean)
-      assert (0..2000).include?(standard_deviation) #?!?
+      stats = flight_sample.stats(:emission, :mean, :sd)
+      assert (100..2000).include?(stats[:mean])
+      assert (0..2000).include?(stats[:sd])
     end
     
     def test_002_top_params
-      top_params = BrighterPlanet.billing.emission_estimate_service.queries.top(:limit => 1, :field => :params, :selector => {:emitter => 'Flight', :key => ENV['TEST_KEY']})
+      top_params = BrighterPlanet.billing.emission_estimate_service.queries.top :field => 'params', :selector => {:emitter => 'Flight', :key => ENV['TEST_KEY']}, :limit => 1
       assert top_params.first.keys.include?('destination_airport')
     end
     
     def test_003_average_emission_for_top_param
       top_params_for_example_flights.each do |p|
         flight_sample = BrighterPlanet.billing.emission_estimate_service.queries.sample(:selector => {:params => p, :key => ENV['TEST_KEY']})
-        mean, standard_deviation = flight_sample.stats(:emission, :mean, :sd)
-        # $stderr.puts mean
-        # $stderr.puts standard_deviation
-        assert (100..2000).include?(mean)
-        assert (0..100).include?(standard_deviation)
+        stats = flight_sample.stats(:emission, :mean, :sd)
+        assert (100..2000).include?(stats[:mean])
+        assert (0..100).include?(stats[:sd])
       end
     end
     
