@@ -44,7 +44,7 @@ Low-level stuff:
       def top_params
         options = self.options.dup
         ::ENV['BRIGHTER_PLANET_BILLING_EXPLAIN'] = 'true' if options.delete(:explain) == true
-        top_params = Billable::Top.new service_model.billables, :field => 'params', :selector => options.slice(:emitter, :key), :limit => options[:limit]
+        top_params = service_model.billables.top :field => 'params', :selector => options.slice(:emitter, :key), :limit => options[:limit]
         top_params.to_csv $stdout
       end
       
@@ -57,7 +57,7 @@ Low-level stuff:
       def top
         options = self.options.dup
         ::ENV['BRIGHTER_PLANET_BILLING_EXPLAIN'] = 'true' if options.delete(:explain) == true
-        top = Billable::Top.new service_model.billables, options.slice(:field, :limit).merge(:selector => selector_from_json)
+        top = service_model.billables.top options.slice(:field, :limit).merge(:selector => selector_from_json)
         top.to_csv $stdout
       end
       
@@ -82,7 +82,7 @@ Low-level stuff:
         if ary = options[:fields] and ary.first.include?(',')
           $stderr.puts "WARNING: commas seen in field definition, separate with spaces instead"
         end
-        sample = Billable::Sample.new service_model.billables, options.slice(:limit, :fields, :digest).merge(time_attrs).merge(:selector => selector_from_json)
+        sample = service_model.billables.sample options.slice(:limit, :fields, :digest).merge(time_attrs).merge(:selector => selector_from_json)
         sample.to_csv $stdout
       end
       
@@ -103,7 +103,7 @@ Low-level stuff:
       def trend
         options = self.options.dup
         ::ENV['BRIGHTER_PLANET_BILLING_EXPLAIN'] = 'true' if options.delete(:explain) == true
-        trend = Billable::Trend.new service_model.billables, options.slice(:field, :stats).merge(time_attrs).merge(:selector => selector_from_json)
+        trend = service_model.billables.trend options.slice(:field, :stats).merge(time_attrs).merge(:selector => selector_from_json)
         trend.to_csv $stdout
       end
       
@@ -124,7 +124,7 @@ Low-level stuff:
       def usage
         options = self.options.dup
         ::ENV['BRIGHTER_PLANET_BILLING_EXPLAIN'] = 'true' if options.delete(:explain) == true
-        usage = Billable::Usage.new service_model.billables, options.slice(:include_failed).merge(time_attrs).merge(:selector => options.slice(:key).reverse_merge(selector_from_json))
+        usage = service_model.billables.usage options.slice(:include_failed).merge(time_attrs).merge(:selector => options.slice(:key).reverse_merge(selector_from_json))
         usage.to_csv $stdout
       end
       
