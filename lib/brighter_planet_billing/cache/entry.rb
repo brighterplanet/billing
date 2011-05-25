@@ -1,14 +1,18 @@
+require 'yajl'
 require 'active_record'
-
-# TODO: rename document to document
-
 module BrighterPlanet
   class Billing
     class Cache
-      class Document < ::ActiveRecord::Base
+      class Entry < ::ActiveRecord::Base
         set_table_name 'brighter_planet_billing_documents'
       
-        serialize :content
+        def doc
+          ::Yajl::Parser.parse read_attribute(:content)
+        end
+        
+        def doc=(obj)
+          write_attribute :content, ::Yajl::Encoder.encode(obj)
+        end
       
         COLUMNS_HASH = {
           :content => :text,
@@ -20,6 +24,14 @@ module BrighterPlanet
           :failed => { :default => false }
         }
         class << self
+          def fast_create_by_service_name_and_execution_id_and_doc(service_name, execution_id, doc)
+            entry = find_or_create_by_execution_id execution_id
+            entry.service_name = service_name
+            entry.doc = doc
+            entry.save false
+            entry
+          end
+          
           def create_table
             if connection.table_exists?(table_name)
               COLUMNS_HASH.each do |k, v|

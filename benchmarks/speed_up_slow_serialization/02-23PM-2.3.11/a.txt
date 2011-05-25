@@ -1,0 +1,1 @@
+      1 ./test/../lib/brighter_planet_billing/emission_estimate_service.rb:10:String

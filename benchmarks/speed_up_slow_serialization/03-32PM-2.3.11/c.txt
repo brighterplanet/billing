@@ -1,0 +1,8 @@
+     27 /Users/seamus/.rvm/rubies/ruby-1.8.7-p334/lib/ruby/1.8/fileutils.rb:243:Array
+     27 ./test/../lib/brighter_planet_billing/billable.rb:134:String
+     27 ./test/../lib/brighter_planet_billing/billable.rb:134:Hash
+     27 ./test/../lib/brighter_planet_billing/billable.rb:133:String
+      1 ./test/../lib/brighter_planet_billing/billable.rb:133:__node__
+      1 ./test/../lib/brighter_planet_billing/billable.rb:133:Hash
+      1 ./test/../lib/brighter_planet_billing/billable.rb:133:Array
+      1 ./test/../lib/brighter_planet_billing/billable.rb:126:Array

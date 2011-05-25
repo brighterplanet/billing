@@ -1,5 +1,4 @@
 require 'benchmark'
-require 'bson'
 
 module BrighterPlanet
   class Billing
@@ -120,8 +119,12 @@ module BrighterPlanet
         Billing.instance.storage.save_execution service.name, execution_id, to_hash
       end
       
+      WITHOUT_AT_SIGN = 1..-1
       def to_hash(*)
-        instance_values.reject { |k, v| v.nil? }.symbolize_keys
+        instance_variables.inject({}) do |memo, ivar_name|
+          memo.merge! ivar_name.to_s[WITHOUT_AT_SIGN].to_sym => instance_variable_get(ivar_name)
+          memo
+        end
       end
       
       def bill(&blk)

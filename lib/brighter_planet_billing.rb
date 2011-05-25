@@ -75,7 +75,7 @@ module BrighterPlanet
     end
     
     def setup
-      Cache::Document.create_table
+      Cache::Entry.create_table
       ::HoptoadNotifier.configure do |hoptoad_config|
         unless hoptoad_config.ignore.include? ::BrighterPlanet::Billing::ReportedExceptionToHoptoad
           hoptoad_config.ignore.push ::BrighterPlanet::Billing::ReportedExceptionToHoptoad

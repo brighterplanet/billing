@@ -1,0 +1,12 @@
+require 'memprof'
+require 'fileutils'
+      def save
+        now = Time.now.strftime('%I-%M%p')
+        FileUtils.mkdir_p now
+        Dir.chdir now do
+          Memprof.track("a.txt") {@a = service.name}
+          Memprof.track("b.txt") {@b = execution_id}
+          Memprof.track("c.txt") {@c = to_hash}
+          Memprof.track("d.txt") {Billing.instance.storage.save_execution @a, @b, @c}
+        end
+      end

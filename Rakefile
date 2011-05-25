@@ -22,17 +22,6 @@ end
 
 # stats
 
-namespace :index do
-  task :list => :setup do
-    require 'pp'
-    PP.pp BrighterPlanet.billing.authoritative_store.index_information(ENV['S'] || 'EmissionEstimateService'), $stderr
-  end
-
-  task :create => :setup do
-    BrighterPlanet.billing.authoritative_store.create_indexes(ENV['S'] || 'EmissionEstimateService')
-  end
-end
-
 namespace :emission_estimate_service do
   task :clean1 => :setup do
     require 'brighter_planet_metadata'

@@ -1,0 +1,12 @@
+     54 /Users/seamus/.rvm/rubies/ruby-1.8.7-p334/lib/ruby/1.8/fileutils.rb:243:Array
+     54 /Users/seamus/.rvm/gems/ruby-1.8.7-p334/gems/activesupport-2.3.11/lib/active_support/core_ext/object/instance_variables.rb:21:String
+     27 /Users/seamus/.rvm/gems/ruby-1.8.7-p334/gems/activesupport-2.3.11/lib/active_support/core_ext/object/instance_variables.rb:20:String
+     27 /Users/seamus/.rvm/gems/ruby-1.8.7-p334/gems/activesupport-2.3.11/lib/active_support/core_ext/hash/keys.rb:23:Array
+     27 ./test/../lib/brighter_planet_billing/billable.rb:133:Array
+      1 /Users/seamus/.rvm/gems/ruby-1.8.7-p334/gems/activesupport-2.3.11/lib/active_support/core_ext/object/instance_variables.rb:20:__node__
+      1 /Users/seamus/.rvm/gems/ruby-1.8.7-p334/gems/activesupport-2.3.11/lib/active_support/core_ext/object/instance_variables.rb:20:Hash
+      1 /Users/seamus/.rvm/gems/ruby-1.8.7-p334/gems/activesupport-2.3.11/lib/active_support/core_ext/object/instance_variables.rb:20:Array
+      1 /Users/seamus/.rvm/gems/ruby-1.8.7-p334/gems/activesupport-2.3.11/lib/active_support/core_ext/hash/keys.rb:23:__node__
+      1 /Users/seamus/.rvm/gems/ruby-1.8.7-p334/gems/activesupport-2.3.11/lib/active_support/core_ext/hash/keys.rb:23:Hash
+      1 ./test/../lib/brighter_planet_billing/billable.rb:133:Hash
+      1 ./test/../lib/brighter_planet_billing/billable.rb:127:Array

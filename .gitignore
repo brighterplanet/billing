@@ -4,3 +4,4 @@ pkg/*
 Gemfile.lock
 secret.sh
 broken/
+.DS_Store

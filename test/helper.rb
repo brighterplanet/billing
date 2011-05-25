@@ -16,7 +16,7 @@ end
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'brighter_planet_billing'
-::BrighterPlanet::Billing::Cache::Document.create_table
+::BrighterPlanet::Billing::Cache::Entry.create_table
 class Test::Unit::TestCase
   def setup
     ::BrighterPlanet.billing.setup

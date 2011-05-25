@@ -2,8 +2,6 @@ unless ::RUBY_VERSION >= '1.9'
   require 'system_timer'
 end
 require 'mongo'
-# TODO: add all indexes
-
 module BrighterPlanet
   class Billing
     # An offsite mongo store.
@@ -58,42 +56,9 @@ module BrighterPlanet
       end
 
       # Raw update... developers should generally use upsert
-      def update(service_name, selector, document, opts = {})
+      def update(service_name, selector, doc, opts = {})
         opts = (opts || {}).dup # otherwise current version of mongo-ruby-driver borks input args
-        collection(service_name).update selector, document, opts
-      end
-
-      # _id_  _id
-      # execution_id_1  execution_id    Delete_24px
-      # year, month_1   year, month   false   Delete_24px
-      # year_1  year  false   Delete_24px
-      # month_1   month   false   Delete_24px
-      # emitter_common_name_1   emitter_common_name   false   Delete_24px
-      # key_1   key   false
-      INDEXES = {
-        'EmissionEstimateService' => [
-          # [ [['key', ::Mongo::ASCENDING]], {} ],
-          # [ [['execution_id', ::Mongo::ASCENDING]], {} ],
-          # [ [['emitter', ::Mongo::ASCENDING]], {}],
-          [ [['started_at', ::Mongo::ASCENDING]], { :unique => false, :background => true }],
-          # [ [['params', ::Mongo::ASCENDING]], { :unique => false, :background => true }],
-          [ [['emitter', ::Mongo::ASCENDING], ['key', ::Mongo::ASCENDING], ['execution_id', ::Mongo::ASCENDING]], { :unique => false, :background => true } ],
-          [ [['emitter', ::Mongo::ASCENDING], ['key', ::Mongo::ASCENDING], ['params', ::Mongo::ASCENDING], ['execution_id', ::Mongo::ASCENDING]], { :unique => false, :background => true } ],
-        ],
-      }
-
-      def create_indexes(service_name)
-        service_name = service_name.to_s
-        INDEXES[service_name].each do |index, opts|
-          $stderr.puts "[brighter_planet_billing] Creating index (#{index.inspect}, #{opts.inspect}) on #{service_name}"
-          collection(service_name).create_index index, opts
-        end
-      rescue ::Mongo::OperationFailure
-        $stderr.puts "[brighter_planet_billing] Failed to create index: #{$!.inspect}"
-      end
-
-      def index_information(service_name)
-        collection(service_name).index_information
+        collection(service_name).update selector, doc, opts
       end
 
       private
