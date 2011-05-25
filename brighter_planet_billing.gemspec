@@ -38,6 +38,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'mongo'
   s.add_dependency 'bson'
   s.add_dependency 'bson_ext'
-  s.add_dependency 'activesupport', '2.3.11'
-  s.add_dependency 'activerecord', '2.3.11'
+  s.add_dependency 'activesupport', '>=2.3.11'
+  s.add_dependency 'activerecord', '>=2.3.11'
 end
