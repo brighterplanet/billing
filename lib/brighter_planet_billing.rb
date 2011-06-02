@@ -2,7 +2,7 @@ require 'singleton'
 require 'stringio'
 require 'active_support'
 require 'active_support/version'
-if ::ActiveSupport::VERSION::MAJOR == 3
+if ::ActiveSupport::VERSION::MAJOR >= 3
   require 'active_support/core_ext'
   require 'active_support/json'
   require 'active_support/secure_random'

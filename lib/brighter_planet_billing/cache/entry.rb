@@ -28,7 +28,11 @@ module BrighterPlanet
             entry = find_or_create_by_execution_id execution_id
             entry.service_name = service_name
             entry.doc = doc
-            entry.save false
+            if ::ActiveRecord::VERSION::MAJOR >= 3
+              entry.save :validate => false
+            else
+              entry.save false
+            end
             entry
           end
           
