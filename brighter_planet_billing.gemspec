@@ -34,7 +34,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'eat'
   s.add_dependency 'timeframe'
   s.add_dependency 'statsample'
-  s.add_dependency 'hoptoad_notifier', '2.4.9'
   s.add_dependency 'mongo'
   s.add_dependency 'bson'
   s.add_dependency 'bson_ext'

@@ -17,7 +17,6 @@ task :setup do
   $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
   require 'brighter_planet_billing'
   BrighterPlanet.billing.config.disable_caching = true
-  BrighterPlanet.billing.config.disable_hoptoad = true
 end
 
 # stats

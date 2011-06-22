@@ -65,34 +65,6 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     assert_equal emission, stored_query.emission
   end
   
-  def test_013_catches_errors_with_hoptoad
-    ::BrighterPlanet.billing.config.disable_hoptoad = false
-    assert_raises(::BrighterPlanet::Billing::ReportedExceptionToHoptoad) do
-      ::BrighterPlanet.billing.emission_estimate_service.bill do |query|
-        raise StandardError
-      end
-    end
-  end
-  
-  def test_014_catches_errors_without_hoptoad
-    assert_raises(StandardError) do
-      ::BrighterPlanet.billing.emission_estimate_service.bill do |query|
-        raise StandardError
-      end
-    end
-  end
-  
-  def test_015_allows_certain_errors_through
-    ::BrighterPlanet.billing.config.disable_hoptoad = false
-    require 'leap'
-    ::BrighterPlanet.billing.config.allowed_exceptions.push ::Leap::NoSolutionError
-    assert_raises(::Leap::NoSolutionError) do
-      ::BrighterPlanet.billing.emission_estimate_service.bill do |query|
-        raise ::Leap::NoSolutionError
-      end
-    end
-  end
-  
   def test_016_can_immediately_get_execution_id
     ::BrighterPlanet.billing.emission_estimate_service.bill do |query|
       assert_equal ::String, query.execution_id.class

@@ -87,7 +87,6 @@ module BrighterPlanet
       attr_accessor :realtime
       attr_accessor :format
       attr_accessor :url
-      attr_accessor :hoptoad_error_id
       attr_accessor :guid
       attr_accessor :async
       attr_accessor :callback
@@ -136,15 +135,6 @@ module BrighterPlanet
         self.succeeded = false
         self.realtime = ::Benchmark.realtime { blk.call self } # where the magic happens
         self.succeeded = true
-      rescue ::Exception => exception
-        if Billing.instance.config.disable_hoptoad or Billing.instance.config.allowed_exceptions.any? { |exception_class| exception.is_a? exception_class }
-          raise exception
-        else
-          if respond_to?(:gather_hoptoad_debugging_data) and hoptoad_error_id = ::HoptoadNotifier.notify_or_ignore(exception, gather_hoptoad_debugging_data)
-            self.hoptoad_error_id = hoptoad_error_id
-          end
-          raise Billing::ReportedExceptionToHoptoad
-        end
       ensure
         self.stopped_at = ::Time.now
         save

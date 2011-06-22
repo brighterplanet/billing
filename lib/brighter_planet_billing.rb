@@ -7,7 +7,6 @@ if ::ActiveSupport::VERSION::MAJOR >= 3
   require 'active_support/json'
   require 'active_support/secure_random'
 end
-require 'hoptoad_notifier'
 
 module BrighterPlanet
   def self.billing
@@ -28,8 +27,6 @@ module BrighterPlanet
     autoload :ReferenceDataService, 'brighter_planet_billing/reference_data_service'
 
     include ::Singleton
-    
-    class ReportedExceptionToHoptoad < RuntimeError; end
     
     EXECUTION_ID_LENGTH = 20
     
@@ -76,11 +73,6 @@ module BrighterPlanet
     
     def setup
       Cache::Entry.create_table
-      ::HoptoadNotifier.configure do |hoptoad_config|
-        unless hoptoad_config.ignore.include? ::BrighterPlanet::Billing::ReportedExceptionToHoptoad
-          hoptoad_config.ignore.push ::BrighterPlanet::Billing::ReportedExceptionToHoptoad
-        end
-      end
     end
     
     def synchronized?

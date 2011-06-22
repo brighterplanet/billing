@@ -31,17 +31,6 @@ module BrighterPlanet
           @timeframe_to = timeframe.to.to_time
           timeframe
         end
-        
-        def gather_hoptoad_debugging_data
-          # provide some things that hoptoad usually pulls from the controller or request
-          debug = {}
-          if params
-            debug[:url] = params[:url]
-            debug[:params] = params
-            debug[:session] = params[:session]
-          end
-          debug
-        end
       end
     end
   end

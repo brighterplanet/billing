@@ -4,11 +4,6 @@ module BrighterPlanet
 
       include ::Singleton
 
-      attr_writer :allowed_exceptions
-      def allowed_exceptions
-        @allowed_exceptions ||= []
-      end
-      
       attr_writer :mongo_host
       def mongo_host
         @mongo_host || ::ENV['BRIGHTER_PLANET_BILLING_MONGO_HOST']
@@ -54,15 +49,9 @@ module BrighterPlanet
         @debug || (::ENV['BRIGHTER_PLANET_BILLING_DEBUG'] == 'true')
       end
       
-      attr_writer :disable_hoptoad
-      def disable_hoptoad
-        @disable_hoptoad || (::ENV['BRIGHTER_PLANET_BILLING_DISABLE_HOPTOAD'] == 'true')
-      end
-      
       # prettier
       alias :disable_caching? :disable_caching
       alias :debug? :debug
-      alias :disable_hoptoad? :disable_hoptoad
     end
   end
 end
