@@ -13,10 +13,14 @@ begin
 rescue ArgumentError
   ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :dbfile => ":memory:")
 end
+
+# require 'logger'
+# ActiveRecord::Base.logger = Logger.new($stderr)
+# ActiveRecord::Base.logger.level = Logger::DEBUG
+
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'brighter_planet_billing'
-::BrighterPlanet::Billing::Cache::Entry.create_table
 class Test::Unit::TestCase
   def setup
     ::BrighterPlanet.billing.setup

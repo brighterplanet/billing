@@ -1,5 +1,6 @@
 require 'yajl'
 require 'active_record'
+require 'create_table'
 module BrighterPlanet
   class Billing
     class Cache
@@ -13,16 +14,14 @@ module BrighterPlanet
         def doc=(obj)
           write_attribute :content, ::Yajl::Encoder.encode(obj)
         end
-      
-        COLUMNS_HASH = {
-          :content => :text,
-          :service_name => :string,
-          :execution_id => :string,
-          :failed => :boolean,
-        }
-        COLUMN_OPTIONS = {
-          :failed => { :default => false }
-        }
+        
+        create_table do
+          text :content
+          string :service_name
+          string :execution_id
+          boolean :failed, :default => false
+        end
+        
         class << self
           def fast_create_by_service_name_and_execution_id_and_doc(service_name, execution_id, doc)
             entry = find_or_create_by_execution_id execution_id
@@ -34,24 +33,6 @@ module BrighterPlanet
               entry.save false
             end
             entry
-          end
-          
-          def create_table
-            if connection.table_exists?(table_name)
-              COLUMNS_HASH.each do |k, v|
-                unless columns_hash[k.to_s].type == v.to_sym
-                  raise ::RuntimeError, "[brighter_planet_billing] need to drop and recreate billing table"
-                end
-              end
-            else
-              connection.create_table table_name do |t|
-                COLUMNS_HASH.each do |k, v|
-                  t.send v, k, (COLUMN_OPTIONS[k] || {})
-                end
-                t.timestamps
-              end
-              reset_column_information
-            end
           end
         end
       

@@ -72,7 +72,7 @@ module BrighterPlanet
     end
     
     def setup
-      Cache::Entry.create_table
+      Cache::Entry.create_table!
     end
     
     def synchronized?
