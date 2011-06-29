@@ -11,12 +11,12 @@ module BrighterPlanet
       
       attr_writer :mongo_port
       def mongo_port
-        @mongo_port || ::ENV['BRIGHTER_PLANET_BILLING_MONGO_PORT']
+        @mongo_port || ::ENV['BRIGHTER_PLANET_BILLING_MONGO_PORT'] || 27017
       end
       
       attr_writer :mongo_arbiter_host
       def mongo_arbiter_host
-        @mongo_arbiter_host || ::ENV['BRIGHTER_PLANET_BILLING_MONGO_ARBITER_HOST'] || 27017
+        @mongo_arbiter_host || ::ENV['BRIGHTER_PLANET_BILLING_MONGO_ARBITER_HOST']
       end
       
       attr_writer :mongo_arbiter_port
