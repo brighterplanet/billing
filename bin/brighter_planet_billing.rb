@@ -35,6 +35,16 @@ Low-level stuff:
 }
       end
       
+      desc "count", "count documents matching a selector"
+      method_option :selector, :type => :string
+      method_option :explain, :type => :boolean, :default => false
+      method_option :service, :type => :string, :default => 'EmissionEstimateService'
+      def count
+        options = self.options.dup
+        ::ENV['BRIGHTER_PLANET_BILLING_EXPLAIN'] = 'true' if options.delete(:explain) == true
+        $stdout.puts service_model.billables.count selector_from_json
+      end
+      
       desc "top_params", "shortcut to getting the top params for a certain emitter and key"
       method_option :emitter, :type => :string, :required => true
       method_option :key, :type => :string, :required => true
