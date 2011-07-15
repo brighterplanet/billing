@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'sqlite3-ruby'
   s.add_development_dependency 'leap'
   s.add_development_dependency 'brighter_planet_metadata'
+  s.add_development_dependency 'rake'
   unless RUBY_VERSION >= '1.9'
     s.add_dependency 'fastercsv'
     s.add_dependency 'SystemTimer'
