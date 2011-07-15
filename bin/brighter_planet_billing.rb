@@ -20,6 +20,7 @@ module BrighterPlanet
     class CLI < ::Thor
       desc "cheat", "copy-paste some useful command examples"
       def cheat
+        example = { :emitter => 'Flight', :key => ::ENV['TEST_KEY'], 'params.destination_airport' => 'MCO' }
         $stdout.puts %{
 Hint: eval `./secrets.sh` (get secrets.sh from Seamus)
 Hint: do a "> foo.csv" and import into Excel
@@ -28,9 +29,9 @@ High level stuff:
   #{__FILE__} top_params --limit 5 --emitter=Flight --key=${TEST_KEY}
 
 Low-level stuff:
-  #{__FILE__} top --limit=5 --field=params --selector="{ emitter: 'Flight', key: '${TEST_KEY}' }"
-  #{__FILE__} sample --limit 5 --fields=emitter started_at params emission --digest params --selector="{ emitter: 'Flight', key: '${TEST_KEY}', 'params.destination_airport': 'MCO' }"
-  #{__FILE__} trend --days=5 --field=emission --selector="{ emitter: 'Flight', key: '${TEST_KEY}', 'params.destination_airport': 'MCO' }"
+  #{__FILE__} top --limit=5 --field=params --selector='#{example.slice(:emitter, :key).to_json}'
+  #{__FILE__} sample --limit 5 --fields=emitter started_at params emission --digest params --selector='#{example.to_json}'
+  #{__FILE__} trend --days=5 --field=emission --selector='#{example.to_json}'
   #{__FILE__} usage --months=6 --key=${TEST_KEY}
 }
       end
