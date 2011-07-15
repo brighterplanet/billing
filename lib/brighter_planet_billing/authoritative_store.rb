@@ -45,7 +45,7 @@ module BrighterPlanet
       def map_reduce(service_name, m, r, opts = {})
         output_collection = collection(service_name).map_reduce(m, r, opts.symbolize_keys.merge(:out => rand(10_000_000).to_s))
         # make sure everything is synced
-        db.get_last_error(:w => 2).inspect
+        db.get_last_error(:w => 2)
         output_collection
       end
 
