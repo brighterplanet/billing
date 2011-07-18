@@ -75,7 +75,7 @@ module BrighterPlanet
           moment = start_at
           while moment < end_at
             $stderr.puts "[brighter_planet_billing period] * from #{moment} to #{moment + period}}" if ::ENV['BRIGHTER_PLANET_BILLING_DEBUG'] and ::ENV['BRIGHTER_PLANET_BILLING_DEBUG'].include?('period')
-            yield moment.dup, { '$gte' => moment.dup, '$lt' => (moment + period) }
+            yield moment.dup, { '$gte' => moment.dup.iso8601, '$lt' => (moment + period).iso8601 }
             moment += period
           end
         end
@@ -94,7 +94,7 @@ module BrighterPlanet
         
         def selector_with_time_attrs
           if (@start_at or @end_at or @minutes or @hours or @days or @weeks or @months) and selector_without_time_attrs[:started_at].nil?
-            selector_without_time_attrs.merge :started_at => { '$gte' => start_at, '$lt' => end_at }
+            selector_without_time_attrs.merge :started_at => { '$gte' => start_at.iso8601, '$lt' => end_at.iso8601 }
           else
             selector_without_time_attrs
           end
