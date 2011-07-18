@@ -1,5 +1,7 @@
 require 'helper'
 
+TEST_TIME_ATTRS = [ :started_at, :stopped_at, :timeframe_from, :timeframe_to ]
+
 class TestBrighterPlanetBilling < Test::Unit::TestCase  
   def test_001_count
     assert(::BrighterPlanet.billing.emission_estimate_service.queries.count > 1_000)
@@ -30,6 +32,9 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     end
     sleep 1
     stored_query = ::BrighterPlanet.billing.emission_estimate_service.queries.find_one(:execution_id => execution_id)
+    TEST_TIME_ATTRS.each do |time_attr|
+      assert_equal ::Time, stored_query.send(time_attr).class
+    end
     assert_equal 'EmissionEstimateService', stored_query.service.name
     assert_equal true, stored_query.certified
     assert_equal 'Automobile', stored_query.emitter
@@ -59,6 +64,9 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     ::BrighterPlanet.billing.synchronize
     sleep 1
     stored_query = ::BrighterPlanet.billing.emission_estimate_service.queries.find_one(:execution_id => execution_id)
+    TEST_TIME_ATTRS.each do |time_attr|
+      assert_equal ::Time, stored_query.send(time_attr).class
+    end
     assert_equal 'EmissionEstimateService', stored_query.service.name
     assert_equal false, stored_query.certified
     assert_equal 'Automobile', stored_query.emitter

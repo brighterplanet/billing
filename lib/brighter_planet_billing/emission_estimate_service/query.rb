@@ -21,8 +21,14 @@ module BrighterPlanet
         attr_accessor :emission
         attr_accessor :input_interpretation
         
-        attr_reader :timeframe_from
-        attr_reader :timeframe_to
+        def timeframe_from
+          @timeframe_from.is_a?(::Time) ? @timeframe_from : @timeframe_from.try(:to_time)
+        end
+        
+        def timeframe_to
+          @timeframe_to.is_a?(::Time) ? @timeframe_to : @timeframe_to.try(:to_time)
+        end
+        
         def timeframe
           ::Timeframe.new timeframe_from, timeframe_to, :skip_year_boundary_crossing_check => true
         end

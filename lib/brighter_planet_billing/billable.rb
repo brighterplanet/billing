@@ -81,8 +81,6 @@ module BrighterPlanet
       attr_accessor :remote_ip
       attr_accessor :referer
       attr_accessor :execution_id
-      attr_accessor :started_at
-      attr_accessor :stopped_at
       attr_accessor :succeeded
       attr_accessor :realtime
       attr_accessor :format
@@ -96,6 +94,16 @@ module BrighterPlanet
         @params.try :symbolize_keys
       end
 
+      attr_writer :started_at
+      def started_at
+        @started_at.is_a?(::Time) ? @started_at : @started_at.try(:to_time)
+      end
+
+      attr_writer :stopped_at
+      def stopped_at
+        @stopped_at.is_a?(::Time) ? @stopped_at : @stopped_at.try(:to_time)
+      end
+      
       def initialize(doc = {})
         doc.each do |k, v|
           if respond_to? "#{k}="
