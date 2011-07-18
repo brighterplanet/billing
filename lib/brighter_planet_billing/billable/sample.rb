@@ -27,23 +27,15 @@ module BrighterPlanet
         # 10,000 datapoints should be enough
         LIMIT = 10_000
 
-        def selector
-          @selector.symbolize_keys
-        end
-
-        def selector_with_random_attribute_threshold
-          with_random_attribute_threshold = selector_without_random_attribute_threshold.merge :execution_id => { '$lte' => RANDOM_ATTRIBUTE_THRESHOLD }
-          if parent.count(with_random_attribute_threshold) > 1
-            with_random_attribute_threshold
-          else
-            selector_without_random_attribute_threshold
-          end
-        end
-        
         include TimeAttrs
+
+        def selector_without_time_attrs
+          @selector.symbolize_keys.merge :execution_id => { '$lte' => RANDOM_ATTRIBUTE_THRESHOLD }
+        end
         
-        alias_method_chain :selector, :time_attrs
-        alias_method_chain :selector, :random_attribute_threshold
+        def selector
+          @selector_with_time_attrs ||= (parent.count(selector_with_time_attrs) > 1) ? selector_with_time_attrs : selector_with_time_attrs.except(:execution_id)
+        end
         
         def limit
           [ @limit, LIMIT ].compact.min
