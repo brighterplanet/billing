@@ -9,41 +9,41 @@ module BrighterPlanet
 
       include ::Singleton
 
-      def find(service_name, selector, opts = {})
+      def find(collection_name, selector, opts = {})
         if ::ENV['BRIGHTER_PLANET_BILLING_EXPLAIN'] == 'true' and selector != {}
           require 'pp'
           opts = opts.dup # mongo-ruby-driver borks input args
-          cursor = collection(service_name).find(selector, opts)
+          cursor = collection(collection_name).find(selector, opts)
           $stderr.puts "[brighter_planet_billing] EXPLAIN #{selector.to_json}"
           ::PP.pp cursor.explain, $stderr
           cursor.close
         end
         opts = (opts || {}).dup # otherwise current version of mongo-ruby-driver borks input args
-        collection(service_name).find selector, opts
+        collection(collection_name).find selector, opts
       end
 
-      def find_one(service_name, selector, opts = {})
+      def find_one(collection_name, selector, opts = {})
         opts = (opts || {}).dup # otherwise current version of mongo-ruby-driver borks input args
-        collection(service_name).find_one selector, opts
+        collection(collection_name).find_one selector, opts
       end
 
-      def distinct(service_name, key, query = nil)
-        collection(service_name).distinct key, query
+      def distinct(collection_name, key, query = nil)
+        collection(collection_name).distinct key, query
       end
 
       # don't just delegate because counting with a selector requires a find in the middle
       def count(*args)
-        service_name, selector, opts = args
+        collection_name, selector, opts = args
         opts = (opts || {}).dup # otherwise current version of mongo-ruby-driver borks input args
         if selector
-          find(service_name, selector, opts).count
+          find(collection_name, selector, opts).count
         else
-          collection(service_name).count
+          collection(collection_name).count
         end
       end
 
-      def map_reduce(service_name, m, r, opts = {})
-        output_collection = collection(service_name).map_reduce(m, r, opts.symbolize_keys.merge(:out => rand(10_000_000).to_s))
+      def map_reduce(collection_name, m, r, opts = {})
+        output_collection = collection(collection_name).map_reduce(m, r, opts.symbolize_keys.merge(:out => rand(10_000_000).to_s))
         # make sure everything is synced
         db.get_last_error(:w => 2)
         output_collection
@@ -56,9 +56,9 @@ module BrighterPlanet
       end
 
       # Raw update... developers should generally use upsert
-      def update(service_name, selector, doc, opts = {})
+      def update(collection_name, selector, doc, opts = {})
         opts = (opts || {}).dup # otherwise current version of mongo-ruby-driver borks input args
-        collection(service_name).update selector, doc, opts
+        collection(collection_name).update selector, doc, opts
       end
 
       private
@@ -77,11 +77,11 @@ module BrighterPlanet
         @db
       end
 
-      def collection(service_name)
-        service_name = service_name.to_s
+      def collection(collection_name)
+        collection_name = collection_name.to_s
         @collection ||= {}
-        return @collection[service_name] if @collection[service_name].is_a? ::Mongo::Collection
-        @collection[service_name] = db.collection service_name
+        return @collection[collection_name] if @collection[collection_name].is_a? ::Mongo::Collection
+        @collection[collection_name] = db.collection collection_name
       end
     end
   end
