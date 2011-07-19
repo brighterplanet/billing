@@ -49,10 +49,10 @@ module BrighterPlanet
         output_collection
       end
 
-      def save_execution(service_name, execution_id, doc)
-        doc = (doc || {}).symbolize_keys.merge(:execution_id => execution_id)
-        selector = { :execution_id => execution_id }
-        update(service_name, selector, doc, :upsert => true)
+      def upsert_billable(billable)
+        doc = (doc || {}).symbolize_keys.merge(:execution_id => billable.execution_id)
+        selector = { :execution_id => billable.execution_id }
+        update billable.collection_name, selector, billable.to_hash, :upsert => true
       end
 
       # Raw update... developers should generally use upsert

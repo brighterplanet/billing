@@ -7,7 +7,7 @@ module BrighterPlanet
       class << self
         def perform
           ActiveRecord::Base.connection.reconnect!
-          Billing.instance.synchronize
+          Billing::CacheEntry.synchronize
         end
         
         attr_writer :queue

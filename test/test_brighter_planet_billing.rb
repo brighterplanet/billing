@@ -61,7 +61,7 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
       execution_id = query.execution_id
     end
     assert_nil ::BrighterPlanet.billing.emission_estimate_service.queries.find_one(:execution_id => execution_id)
-    ::BrighterPlanet.billing.synchronize
+    ::BrighterPlanet::Billing::CacheEntry.synchronize
     sleep 1
     stored_query = ::BrighterPlanet.billing.emission_estimate_service.queries.find_one(:execution_id => execution_id)
     TEST_TIME_ATTRS.each do |time_attr|

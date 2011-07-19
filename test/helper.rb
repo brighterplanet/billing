@@ -27,3 +27,5 @@ class Test::Unit::TestCase
     ::BrighterPlanet.billing.config.disable_caching = false
   end
 end
+
+Time.zone = 'Eastern Time (US & Canada)'

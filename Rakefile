@@ -27,7 +27,7 @@ namespace :emission_estimate_service do
     BrighterPlanet.metadata.emitters.each do |emitter|
       puts
       puts emitter
-      puts BrighterPlanet.billing.authoritative_store.update('EmissionEstimateService', {:emitter_common_name=>emitter.underscore, :emitter=>{'$exists'=>false}}, {'$set'=>{:emitter=>emitter}}, :safe => true, :upsert => false, :multi => true)
+      puts BrighterPlanet::Billing::AuthoritativeStore.instance.update('EmissionEstimateService', {:emitter_common_name=>emitter.underscore, :emitter=>{'$exists'=>false}}, {'$set'=>{:emitter=>emitter}}, :safe => true, :upsert => false, :multi => true)
     end
   end
   

@@ -18,6 +18,10 @@ module BrighterPlanet
           raise ::RuntimeError, "[brighter_planet_billing] subclass of Billable must define .service"
         end
         
+        def collection_name
+          service.name
+        end
+        
         # Find that acts like mongo
         def find(selector, opts = {})
           ary = []
@@ -26,7 +30,7 @@ module BrighterPlanet
         end
       
         def find_one(selector, opts = {})
-          if doc = Billing.instance.storage.find_one(service.name, selector, opts)
+          if doc = Billing::AuthoritativeStore.instance.find_one(collection_name, selector, opts)
             new doc
           end
         end
@@ -36,18 +40,18 @@ module BrighterPlanet
         def count(*args)
           selector = args[0] || {}
           opts = args[1] || {}
-          Billing.instance.storage.count service.name, selector, opts
+          Billing::AuthoritativeStore.instance.count collection_name, selector, opts
         end
 
         # Sort of like #each with finder args (selector and opts)
         def stream(selector, opts = {})
-          Billing.instance.storage.find(service.name, selector, opts).each do |doc|
+          Billing::AuthoritativeStore.instance.find(collection_name, selector, opts).each do |doc|
             yield new(doc)
           end
         end
         
         def map_reduce(m, r, opts = {})
-          Billing.instance.storage.map_reduce service.name, m, r, opts
+          Billing::AuthoritativeStore.instance.map_reduce collection_name, m, r, opts
         end
 
         def sample(attrs = {})
@@ -104,8 +108,44 @@ module BrighterPlanet
         @stopped_at.is_a?(::Time) ? @stopped_at : @stopped_at.try(:to_time)
       end
       
-      def initialize(doc = {})
-        doc.each do |k, v|
+      def initialize(hsh = {})
+        import_hash hsh
+      end
+
+      def service
+        self.class.service
+      end
+      
+      def collection_name
+        service.name
+      end
+
+      def mongo_id
+        @_id
+      end
+
+      def save(force_authoritative = false)
+        if force_authoritative or Billing::Config.instance.disable_caching?
+          Billing::AuthoritativeStore.instance.upsert_billable self
+        else
+          Billing::CacheEntry.upsert_billable self
+        end
+      end
+      
+      WITHOUT_AT_SIGN = 1..-1
+      def marshal_dump(*)
+        instance_variables.inject({}) do |memo, ivar_name|
+          k = ivar_name.to_s[WITHOUT_AT_SIGN].to_sym
+          unless (v = respond_to?(k) ? send(k) : instance_variable_get(ivar_name)).nil?
+            memo[k] = v
+          end
+          memo
+        end
+      end
+      alias :to_hash :marshal_dump
+      
+      def marshal_load(memo)
+        memo.each do |k, v|
           if respond_to? "#{k}="
             send "#{k}=", v
           else
@@ -113,30 +153,11 @@ module BrighterPlanet
           end
         end
       end
-
-      def service
-        self.class.service
-      end
-
-      def mongo_id
-        @_id
-      end
-
-      def save
-        Billing.instance.storage.save_execution service.name, execution_id, to_hash
-      end
-      
-      WITHOUT_AT_SIGN = 1..-1
-      def to_hash(*)
-        instance_variables.inject({}) do |memo, ivar_name|
-          memo.merge! ivar_name.to_s[WITHOUT_AT_SIGN].to_sym => instance_variable_get(ivar_name)
-          memo
-        end
-      end
+      alias :import_hash :marshal_load
       
       def bill(&blk)
         self.execution_id = Billing.generate_execution_id
-        now = ::Time.now
+        now = ::Time.now.utc
         self.year = now.year
         self.month = now.month
         self.started_at = now
@@ -144,7 +165,7 @@ module BrighterPlanet
         self.realtime = ::Benchmark.realtime { blk.call self } # where the magic happens
         self.succeeded = true
       ensure
-        self.stopped_at = ::Time.now
+        self.stopped_at = ::Time.now.utc
         save
       end
     end

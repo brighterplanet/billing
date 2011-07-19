@@ -15,8 +15,7 @@ module BrighterPlanet
   
   class Billing
     autoload :Config, 'brighter_planet_billing/config'
-    autoload :Storage, 'brighter_planet_billing/storage'
-    autoload :Cache, 'brighter_planet_billing/cache'
+    autoload :CacheEntry, 'brighter_planet_billing/cache_entry'
     autoload :AuthoritativeStore, 'brighter_planet_billing/authoritative_store'
     autoload :Key, 'brighter_planet_billing/key'
     autoload :Billable, 'brighter_planet_billing/billable'
@@ -59,28 +58,8 @@ module BrighterPlanet
       Config.instance
     end
     
-    def storage
-      Storage.instance
-    end
-    
-    def cache
-      Cache.instance
-    end
-    
-    def authoritative_store
-      AuthoritativeStore.instance
-    end
-    
     def setup
-      Cache::Entry.create_table!
-    end
-    
-    def synchronized?
-      storage.synchronized?
-    end
-    
-    def synchronize
-      storage.synchronize
+      CacheEntry.create_table!
     end
   end
 end
