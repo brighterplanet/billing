@@ -7,9 +7,17 @@ module BrighterPlanet
   class Billing
     class Billable
       class Top
+        include ::Enumerable
+        include EachHash
+        include ToCSV
+        include TimeAttrs
+
+        EXCLUDED_FIELDS = [ :started_at, :stopped_at ]
+
         class << self
           #{'params.airline':'AA','params.date':'2009-04-30','params.timeframe':'2009-01-01/2010-01-01','emitter':'Flight','params.origin_airport':'STL','params.destination_airport':'LAX','key':'sdaiosjaoisdjaoisdjaojsd','params.segments_per_trip':'1','params.trips':'1','params.aircraft':'M83'}
           def flatten(selector)
+            selector = selector.symbolize_keys.except(*EXCLUDED_FIELDS)
             selector.inject({}) do |memo, (k, v)|
               if v.is_a?(::Hash)
                 v.each do |k1, v1|
@@ -27,9 +35,10 @@ module BrighterPlanet
               memo
             end
           end
-          
+
           # db.customers.find( { name : { $regex : 'acme.*corp', $options: 'i' } } );
           def regexpify(selector)
+            selector = selector.symbolize_keys.except(*EXCLUDED_FIELDS)
             selector.inject({}) do |memo, (k, v)|
               memo[k] = if v.is_a?(::String) and v =~ /\A\s+/
                 { '$regex' => ('^\\s+' + v.lstrip) }
@@ -59,8 +68,6 @@ module BrighterPlanet
           @field.to_sym
         end
 
-        include ::Enumerable
-
         def each
           cache! if cache.empty?
           cache.each do |doc|
@@ -72,13 +79,11 @@ module BrighterPlanet
           [ :"selector_for_top_values_of_#{field}" ]
         end
 
-        include EachHash
-
-        def selector_with_field_existence_checking
+        def selector
           @selector.symbolize_keys.reverse_merge field => { '$exists' => true }#, '$nin' => [ '', nil, {} ]}
         end
 
-        alias :selector :selector_with_field_existence_checking
+        alias_method_chain :selector, :time_attrs
 
         def map_function
           ::BSON::Code.new <<-EOS
@@ -97,8 +102,6 @@ module BrighterPlanet
             }
           EOS
         end
-        
-        include ToCSV
 
         def write_csv(f)
           f.puts columns.to_csv
