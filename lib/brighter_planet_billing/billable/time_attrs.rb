@@ -89,7 +89,7 @@ module BrighterPlanet
         end
 
         def now
-          @now || ::Time.now
+          @now || ::Time.now.utc
         end
         
         def selector_with_time_attrs
