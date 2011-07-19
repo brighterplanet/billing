@@ -114,7 +114,7 @@ module BrighterPlanet
         end
                 
         def cache!
-          output_collection = parent.map_reduce(map_function, reduce_function, :query => selector_with_field_existence_checking)
+          output_collection = parent.map_reduce(map_function, reduce_function, :query => selector)
           output_collection.find({}, :limit => limit, :sort => [['value', ::Mongo::DESCENDING]]).each do |doc|
             cache.push doc['_id']
           end
