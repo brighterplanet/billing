@@ -18,7 +18,7 @@ module BrighterPlanet
         def as_csv_value(value)
           case value
           when ::Hash, ::Array
-            value.to_json.gsub(%{"}, %{'})
+            value.to_json
           when ::Time, ::Date
             value.to_s :db
           else

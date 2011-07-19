@@ -103,7 +103,7 @@ module BrighterPlanet
           f.puts columns.to_csv
           each do |top_value|
             output = Top.regexpify Top.flatten(selector.merge(field => top_value))
-            f.puts [ output.to_json.gsub(%{"}, %{'}) ].to_csv
+            f.puts [ output.to_json ].to_csv
           end
         end
         
