@@ -28,10 +28,11 @@ module BrighterPlanet
             end
           end
           
+          # db.customers.find( { name : { $regex : 'acme.*corp', $options: 'i' } } );
           def regexpify(selector)
             selector.inject({}) do |memo, (k, v)|
               memo[k] = if v.is_a?(::String) and v =~ /\A\s+/
-                %q{/^\s+} + v.lstrip + '/'
+                { '$regex' => ('^\\s+' + v.lstrip) }
               else
                 v
               end
