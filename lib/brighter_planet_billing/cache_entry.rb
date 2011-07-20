@@ -1,12 +1,12 @@
 require 'yajl'
 require 'active_record'
-require 'create_table'
+require 'force_schema'
 module BrighterPlanet
   class Billing
     class CacheEntry < ::ActiveRecord::Base
       set_table_name 'brighter_planet_billing_cache_entries'
 
-      create_table do
+      force_schema do
         text :serialized_content
         string :collection_name
         string :execution_id

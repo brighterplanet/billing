@@ -59,7 +59,7 @@ module BrighterPlanet
     end
     
     def setup
-      CacheEntry.create_table!
+      CacheEntry.force_schema!
     end
   end
 end
