@@ -54,7 +54,7 @@ module BrighterPlanet
           when :week
             now - @weeks.to_f.week
           when :month
-            (now - @months.to_f.month).at_beginning_of_month
+            (now - @months.to_i.month).at_beginning_of_month
           else
             now - (4*period) # 4 day ago, 4 minute ago, etc.
           end
