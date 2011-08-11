@@ -2,8 +2,8 @@ require 'helper'
 
 class TestExecution < Test::Unit::TestCase
   if ENV['TEST_KEY']
-    def test_001_emission_estimate_service_execution
-      ::BrighterPlanet.billing.emission_estimate_service.bill do |query|
+    def test_001_impact_estimate_service_execution
+      ::BrighterPlanet.billing.impact_estimate_service.bill do |query|
         @execution_id = query.execution_id
         query.emitter = 'Flight'
         query.timeframe = Timeframe.this_year
@@ -24,8 +24,8 @@ class TestExecution < Test::Unit::TestCase
           :bar => { :nar => 'dar' }
         }
         # the nubbies
-        #@emission = emitter_instance.emission timeframe, :comply => compliance
-        query.emission = 14.34
+        #@impact = emitter_instance.impact timeframe, :comply => compliance
+        query.impact = 14.34
       end
     end
   end

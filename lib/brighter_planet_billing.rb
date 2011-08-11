@@ -22,7 +22,7 @@ module BrighterPlanet
     autoload :Synchronization, 'brighter_planet_billing/synchronization'
     
     # services
-    autoload :EmissionEstimateService, 'brighter_planet_billing/emission_estimate_service'
+    autoload :ImpactEstimateService, 'brighter_planet_billing/impact_estimate_service'
     autoload :ReferenceDataService, 'brighter_planet_billing/reference_data_service'
 
     include ::Singleton
@@ -37,7 +37,7 @@ module BrighterPlanet
     
     def services
       [
-        emission_estimate_service,
+        impact_estimate_service,
         reference_data_service
       ]
     end
@@ -46,8 +46,8 @@ module BrighterPlanet
       Key
     end
     
-    def emission_estimate_service
-      EmissionEstimateService.instance
+    def impact_estimate_service
+      ImpactEstimateService.instance
     end
     
     def reference_data_service

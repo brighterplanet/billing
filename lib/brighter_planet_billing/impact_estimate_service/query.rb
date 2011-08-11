@@ -2,12 +2,12 @@ require 'timeframe'
 
 module BrighterPlanet
   class Billing
-    class EmissionEstimateService
-      # The billable unit of the emission estimate service is a query
+    class ImpactEstimateService
+      # The billable unit of the impact estimate service is a query
       class Query < Billable
         class << self
           def service
-            EmissionEstimateService.instance
+            ImpactEstimateService.instance
           end
         end
         
@@ -18,7 +18,7 @@ module BrighterPlanet
         attr_accessor :emitter_version
         attr_accessor :compliance
         attr_accessor :emitter
-        attr_accessor :emission
+        attr_accessor :impact
         attr_accessor :input_interpretation
         
         def timeframe_from

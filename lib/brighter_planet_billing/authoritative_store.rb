@@ -73,7 +73,6 @@ module BrighterPlanet
         return @db if @db.is_a? ::Mongo::DB
         @db = connection.db Billing.instance.config.mongo_database
         @db.authenticate Billing.instance.config.mongo_username, Billing.instance.config.mongo_password
-        @db.strict = true
         @db
       end
 

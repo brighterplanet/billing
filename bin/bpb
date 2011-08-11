@@ -28,8 +28,8 @@ Hint: The test key being used is #{::ENV['TEST_KEY']} (from ENV['TEST_KEY'])
 
 Low-level stuff:
   #{__FILE__} top --limit=5 --field=params --selector='#{example.slice(:emitter, :key).to_json}'
-  #{__FILE__} sample --limit 5 --fields=emitter started_at params emission --digest params --selector='#{example.to_json}'
-  #{__FILE__} trend --days=5 --field=emission --selector='#{example.to_json}'
+  #{__FILE__} sample --limit 5 --fields=emitter started_at params impact --digest params --selector='#{example.to_json}'
+  #{__FILE__} trend --days=5 --field=impact --selector='#{example.to_json}'
   #{__FILE__} usage --months=6 --key=#{::ENV['TEST_KEY']}
 }
       end
@@ -37,7 +37,7 @@ Low-level stuff:
       desc "count", "count documents matching a selector"
       method_option :selector, :type => :string
       method_option :explain, :type => :boolean, :default => false
-      method_option :service, :type => :string, :default => 'EmissionEstimateService'
+      method_option :service, :type => :string, :default => 'ImpactEstimateService'
       def count
         options = self.options.dup
         ::ENV['BRIGHTER_PLANET_BILLING_EXPLAIN'] = 'true' if options.delete(:explain) == true
@@ -48,7 +48,7 @@ Low-level stuff:
       method_option :field, :type => :string
       method_option :selector, :type => :string
       method_option :limit, :type => :numeric
-      method_option :service, :type => :string, :default => 'EmissionEstimateService'
+      method_option :service, :type => :string, :default => 'ImpactEstimateService'
       method_option :period, :type => :string
       method_option :start_at, :type => :string
       method_option :end_at, :type => :string
@@ -69,7 +69,7 @@ Low-level stuff:
       method_option :selector, :type => :string
       method_option :fields, :type => :array
       method_option :explain, :type => :boolean, :default => false
-      method_option :service, :type => :string, :default => 'EmissionEstimateService'
+      method_option :service, :type => :string, :default => 'ImpactEstimateService'
       method_option :period, :type => :string
       method_option :start_at, :type => :string
       method_option :end_at, :type => :string
@@ -93,7 +93,7 @@ Low-level stuff:
       method_option :selector, :type => :string
       method_option :stats, :type => :array, :default => Billable::Trend::DEFAULT_STATS
       method_option :explain, :type => :boolean, :default => false
-      method_option :service, :type => :string, :default => 'EmissionEstimateService'
+      method_option :service, :type => :string, :default => 'ImpactEstimateService'
       method_option :period, :type => :string
       method_option :start_at, :type => :string
       method_option :end_at, :type => :string
@@ -113,7 +113,7 @@ Low-level stuff:
       method_option :key, :type => :string, :required => true
       method_option :include_failed, :type => :boolean, :default => false
       method_option :explain, :type => :boolean, :default => false
-      method_option :service, :type => :string, :default => 'EmissionEstimateService'
+      method_option :service, :type => :string, :default => 'ImpactEstimateService'
       method_option :selector, :type => :string
       method_option :period, :type => :string
       method_option :start_at, :type => :string
