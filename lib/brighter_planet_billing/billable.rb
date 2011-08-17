@@ -19,7 +19,7 @@ module BrighterPlanet
         end
         
         def collection_name
-          service.name
+          service.class.to_s.demodulize
         end
         
         # Find that acts like mongo
@@ -117,7 +117,7 @@ module BrighterPlanet
       end
       
       def collection_name
-        service.name
+        self.class.collection_name
       end
 
       def mongo_id

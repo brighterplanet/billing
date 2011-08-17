@@ -38,7 +38,7 @@ module BrighterPlanet
           until synchronized?
             entry = untried.first
             begin
-              billable = Billing.const_get(entry.collection_name).instance.billables.new entry.content.merge(:execution_id => entry.execution_id)
+              billable = Billing.const_get(entry.collection_name.underscore.camelcase).instance.billables.new entry.content.merge(:execution_id => entry.execution_id)
               billable.save true
               entry.destroy
             rescue ::Exception => exception

@@ -5,10 +5,6 @@ module BrighterPlanet
     
       include ::Singleton
     
-      def name
-        'Data1'
-      end
-    
       def downloads
         Download
       end

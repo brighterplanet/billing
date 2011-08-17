@@ -139,7 +139,7 @@ Low-level stuff:
       end
       
       def service_model
-        Billing.const_get(options[:service]).instance
+        Billing.const_get(options[:service].underscore.camelcase).instance
       end
       
       def selector_from_json

@@ -6,10 +6,6 @@ module BrighterPlanet
     
       include ::Singleton
     
-      def name
-        'Cm1'
-      end
-    
       def queries
         Query
       end
