@@ -1,13 +1,13 @@
 module BrighterPlanet
   class Billing
-    class ImpactEstimateService
-      autoload :Query, 'brighter_planet_billing/impact_estimate_service/query'
-      autoload :Trend, 'brighter_planet_billing/impact_estimate_service/trend'
+    class Cm1
+      autoload :Query, 'brighter_planet_billing/cm1/query'
+      autoload :Trend, 'brighter_planet_billing/cm1/trend'
     
       include ::Singleton
     
       def name
-        'ImpactEstimateService'
+        'Cm1'
       end
     
       def queries

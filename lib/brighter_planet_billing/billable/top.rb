@@ -15,7 +15,7 @@ module BrighterPlanet
         EXCLUDED_FIELDS = [ :started_at, :stopped_at ]
 
         class << self
-          #{'params.airline':'AA','params.date':'2009-04-30','params.timeframe':'2009-01-01/2010-01-01','emitter':'Flight','params.origin_airport':'STL','params.destination_airport':'LAX','key':'sdaiosjaoisdjaoisdjaojsd','params.segments_per_trip':'1','params.trips':'1','params.aircraft':'M83'}
+          #{'input.airline':'AA','input.date':'2009-04-30','input.timeframe':'2009-01-01/2010-01-01','emitter':'Flight','input.origin_airport':'STL','input.destination_airport':'LAX','key':'sdaiosjaoisdjaoisdjaojsd','input.segments_per_trip':'1','input.trips':'1','input.aircraft':'M83'}
           def flatten(selector)
             selector = selector.symbolize_keys.except(*EXCLUDED_FIELDS)
             selector.inject({}) do |memo, (k, v)|
@@ -80,7 +80,7 @@ module BrighterPlanet
         end
 
         def selector
-          @selector.symbolize_keys.reverse_merge field => { '$exists' => true }#, '$nin' => [ '', nil, {} ]}
+          @selector.symbolize_keys.reverse_merge field => { :'$exists' => true }#, :'$nin' => [ '', nil, {} ]}
         end
 
         alias_method_chain :selector, :time_attrs

@@ -21,11 +21,11 @@ end
 
 # stats
 
-namespace :impact_estimate_service do
+namespace :cm1 do
   task :re_save => :setup do
     count = 0
     started_at_is_a_string = { 'started_at' => { '$type' => 2 } }
-    BrighterPlanet.billing.impact_estimate_service.queries.stream(started_at_is_a_string) do |query|
+    BrighterPlanet.billing.cm1.queries.stream(started_at_is_a_string) do |query|
       query.save
       if ((count+=1) % 500) == 0
         $stderr.puts "fixed #{count} (example: #{query.execution_id})"
@@ -38,31 +38,31 @@ namespace :impact_estimate_service do
   #   BrighterPlanet.metadata.emitters.each do |emitter|
   #     puts
   #     puts emitter
-  #     puts BrighterPlanet::Billing::AuthoritativeStore.instance.update('ImpactEstimateService', {:emitter_common_name=>emitter.underscore, :emitter=>{'$exists'=>false}}, {'$set'=>{:emitter=>emitter}}, :safe => true, :upsert => false, :multi => true)
+  #     puts BrighterPlanet::Billing::AuthoritativeStore.instance.update('Cm1', {:emitter_common_name=>emitter.underscore, :emitter=>{'$exists'=>false}}, {'$set'=>{:emitter=>emitter}}, :safe => true, :upsert => false, :multi => true)
   #   end
   # end
   # 
-  # task :retire_input_params => :setup do
+  # task :retire_input_input => :setup do
   #   count = 0
-  #   BrighterPlanet.billing.impact_estimate_service.queries.stream({:input_params=>{'$exists'=>true}}) do |query|
+  #   BrighterPlanet.billing.cm1.queries.stream({:input_input=>{'$exists'=>true}}) do |query|
   #     changed = false
   #     # if emitter_common_name = query.instance_variable_get(:@emitter_common_name) and query.emitter != emitter_common_name.camelcase
   #     #   query.emitter = emitter_common_name.camelcase
   #     #   changed = true
   #     # end
-  #     if query.instance_variable_defined?(:@output_params)
-  #       output_params = query.instance_variable_get(:@output_params)
-  #       if output_params.is_a?(::Hash)
-  #         query.impact = output_params.symbolize_keys[:impact].to_f
-  #         query.instance_variable_set :@output_params, nil
+  #     if query.instance_variable_defined?(:@output_input)
+  #       output_input = query.instance_variable_get(:@output_input)
+  #       if output_input.is_a?(::Hash)
+  #         query.impact = output_input.symbolize_keys[:impact].to_f
+  #         query.instance_variable_set :@output_input, nil
   #       end
   #       changed = true
   #     end
-  #     if query.instance_variable_defined?(:@input_params)
-  #       params = query.instance_variable_get(:@input_params)
-  #       if params.is_a?(::Hash)
-  #         query.params = params.symbolize_keys
-  #         query.instance_variable_set :@input_params, nil
+  #     if query.instance_variable_defined?(:@input_input)
+  #       input = query.instance_variable_get(:@input_input)
+  #       if input.is_a?(::Hash)
+  #         query.input = input.symbolize_keys
+  #         query.instance_variable_set :@input_input, nil
   #       end
   #       changed = true
   #     end

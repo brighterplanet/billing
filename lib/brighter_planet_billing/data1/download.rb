@@ -1,12 +1,12 @@
 module BrighterPlanet
   class Billing
-    class ReferenceDataService
-      # The billable unit of the reference data web service is a download
+    class Data1
+      # The billable unit of data1 is a download
       # Currently we don't charge for it
       class Download < Billable
         class << self
           def service
-            ReferenceDataService.instance
+            Data1.instance
           end
         end
         

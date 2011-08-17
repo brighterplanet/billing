@@ -2,8 +2,8 @@ require 'helper'
 
 class TestExecution < Test::Unit::TestCase
   if ENV['TEST_KEY']
-    def test_001_impact_estimate_service_execution
-      ::BrighterPlanet.billing.impact_estimate_service.bill do |query|
+    def test_001_cm1_execution
+      ::BrighterPlanet.billing.cm1.bill do |query|
         @execution_id = query.execution_id
         query.emitter = 'Flight'
         query.timeframe = Timeframe.this_year
@@ -19,13 +19,13 @@ class TestExecution < Test::Unit::TestCase
         query.referer = 'http://referer'
         query.callback = 'http://callback'
         query.guid = '0192309jsjoijoijdoijo'
-        query.params = {
+        query.input = {
           :foo => { :bar => 'foo' },
           :bar => { :nar => 'dar' }
         }
         # the nubbies
         #@impact = emitter_instance.impact timeframe, :comply => compliance
-        query.impact = 14.34
+        query.impact = { 'carbon' => 14.34 }
       end
     end
   end

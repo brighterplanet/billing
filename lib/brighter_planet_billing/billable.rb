@@ -93,9 +93,9 @@ module BrighterPlanet
       attr_accessor :async
       attr_accessor :callback
 
-      attr_writer :params
-      def params
-        @params.try :symbolize_keys
+      attr_writer :input
+      def input
+        @input.try :symbolize_keys
       end
 
       attr_writer :started_at

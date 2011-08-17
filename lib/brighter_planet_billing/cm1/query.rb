@@ -2,12 +2,12 @@ require 'timeframe'
 
 module BrighterPlanet
   class Billing
-    class ImpactEstimateService
-      # The billable unit of the impact estimate service is a query
+    class Cm1
+      # The billable unit of CM1 is a query
       class Query < Billable
         class << self
           def service
-            ImpactEstimateService.instance
+            Cm1.instance
           end
         end
         
@@ -19,7 +19,6 @@ module BrighterPlanet
         attr_accessor :compliance
         attr_accessor :emitter
         attr_accessor :impact
-        attr_accessor :input_interpretation
         
         def timeframe_from
           @timeframe_from.is_a?(::Time) ? @timeframe_from : @timeframe_from.try(:to_time)
@@ -28,7 +27,6 @@ module BrighterPlanet
         def timeframe_to
           @timeframe_to.is_a?(::Time) ? @timeframe_to : @timeframe_to.try(:to_time)
         end
-        
         def timeframe
           ::Timeframe.new timeframe_from, timeframe_to, :skip_year_boundary_crossing_check => true
         end

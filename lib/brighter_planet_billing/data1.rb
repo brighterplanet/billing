@@ -1,12 +1,12 @@
 module BrighterPlanet
   class Billing
-    class ReferenceDataService
-      autoload :Download, 'brighter_planet_billing/reference_data_service/download'
+    class Data1
+      autoload :Download, 'brighter_planet_billing/data1/download'
     
       include ::Singleton
     
       def name
-        'ReferenceDataService'
+        'Data1'
       end
     
       def downloads
