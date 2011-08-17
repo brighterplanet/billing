@@ -35,11 +35,15 @@ module BrighterPlanet
       end
     end
     
-    def services
+    def service_models
       [
         cm1,
         data1
       ]
+    end
+    
+    def services
+      service_models.map(&:service)
     end
     
     def keys

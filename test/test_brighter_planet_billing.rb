@@ -35,7 +35,7 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     TEST_TIME_ATTRS.each do |time_attr|
       assert_equal ::Time, stored_query.send(time_attr).class
     end
-    assert_equal 'Cm1', stored_query.service.class.to_s.demodulize
+    assert_equal 'Cm1', stored_query.service
     assert_equal true, stored_query.certified
     assert_equal 'Automobile', stored_query.emitter
     assert_equal impact, stored_query.impact
@@ -67,7 +67,7 @@ class TestBrighterPlanetBilling < Test::Unit::TestCase
     TEST_TIME_ATTRS.each do |time_attr|
       assert_equal ::Time, stored_query.send(time_attr).class
     end
-    assert_equal 'Cm1', stored_query.service.class.to_s.demodulize
+    assert_equal 'Cm1', stored_query.service
     assert_equal false, stored_query.certified
     assert_equal 'Automobile', stored_query.emitter
     assert_equal impact, stored_query.impact

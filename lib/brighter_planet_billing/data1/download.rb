@@ -5,7 +5,7 @@ module BrighterPlanet
       # Currently we don't charge for it
       class Download < Billable
         class << self
-          def service
+          def service_model
             Data1.instance
           end
         end

@@ -15,11 +15,7 @@ module BrighterPlanet
 
       class << self
         def service
-          raise ::RuntimeError, "[brighter_planet_billing] subclass of Billable must define .service"
-        end
-        
-        def collection_name
-          service.class.to_s.demodulize
+          service_model.service
         end
         
         # Find that acts like mongo
@@ -30,7 +26,7 @@ module BrighterPlanet
         end
       
         def find_one(selector, opts = {})
-          if doc = Billing::AuthoritativeStore.instance.find_one(collection_name, selector, opts)
+          if doc = Billing::AuthoritativeStore.instance.find_one(service, selector, opts)
             new doc
           end
         end
@@ -40,18 +36,18 @@ module BrighterPlanet
         def count(*args)
           selector = args[0] || {}
           opts = args[1] || {}
-          Billing::AuthoritativeStore.instance.count collection_name, selector, opts
+          Billing::AuthoritativeStore.instance.count service, selector, opts
         end
 
         # Sort of like #each with finder args (selector and opts)
         def stream(selector, opts = {})
-          Billing::AuthoritativeStore.instance.find(collection_name, selector, opts).each do |doc|
+          Billing::AuthoritativeStore.instance.find(service, selector, opts).each do |doc|
             yield new(doc)
           end
         end
         
         def map_reduce(m, r, opts = {})
-          Billing::AuthoritativeStore.instance.map_reduce collection_name, m, r, opts
+          Billing::AuthoritativeStore.instance.map_reduce service, m, r, opts
         end
 
         def sample(attrs = {})
@@ -112,14 +108,14 @@ module BrighterPlanet
         import_hash hsh
       end
 
+      def service_model
+        self.class.service_model
+      end
+      
       def service
         self.class.service
       end
       
-      def collection_name
-        self.class.collection_name
-      end
-
       def mongo_id
         @_id
       end

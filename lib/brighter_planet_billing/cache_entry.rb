@@ -8,7 +8,7 @@ module BrighterPlanet
 
       force_schema do
         text :serialized_content
-        string :collection_name
+        string :service
         string :execution_id
         boolean :failed, :default => false
       end
@@ -38,7 +38,7 @@ module BrighterPlanet
           until synchronized?
             entry = untried.first
             begin
-              billable = Billing.const_get(entry.collection_name.underscore.camelcase).instance.billables.new entry.content.merge(:execution_id => entry.execution_id)
+              billable = Billing.const_get(entry.service.underscore.camelcase).instance.billables.new entry.content.merge(:execution_id => entry.execution_id)
               billable.save true
               entry.destroy
             rescue ::Exception => exception
@@ -50,7 +50,7 @@ module BrighterPlanet
         
         def upsert_billable(billable)
           entry = find_or_create_by_execution_id billable.execution_id
-          entry.collection_name = billable.collection_name
+          entry.service = billable.service
           entry.content = billable.to_hash
           if ::ActiveRecord::VERSION::MAJOR >= 3
             entry.save :validate => false

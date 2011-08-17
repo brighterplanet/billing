@@ -5,7 +5,7 @@ module BrighterPlanet
       class << self
         def all
           Billing.instance.services.map do |service|
-            Billing::AuthoritativeStore.instance.distinct(service.class.to_s.demodulize, :key).map do |key|
+            Billing::AuthoritativeStore.instance.distinct(service, :key).map do |key|
               new key.to_s
             end
           end.flatten.uniq

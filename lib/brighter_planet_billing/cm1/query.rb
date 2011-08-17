@@ -6,7 +6,7 @@ module BrighterPlanet
       # The billable unit of CM1 is a query
       class Query < Billable
         class << self
-          def service
+          def service_model
             Cm1.instance
           end
         end

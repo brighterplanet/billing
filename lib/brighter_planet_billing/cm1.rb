@@ -10,6 +10,10 @@ module BrighterPlanet
         Query
       end
       
+      def service
+        self.class.to_s.demodulize
+      end
+      
       alias :billables :queries
       
       delegate :bill, :to => :queries

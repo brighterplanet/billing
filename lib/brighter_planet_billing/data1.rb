@@ -9,6 +9,10 @@ module BrighterPlanet
         Download
       end
       
+      def service
+        self.class.to_s.demodulize
+      end
+      
       alias :billables :downloads
             
       delegate :bill, :to => :downloads
