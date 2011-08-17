@@ -24,6 +24,7 @@ module BrighterPlanet
     # services
     autoload :Cm1, 'brighter_planet_billing/cm1'
     autoload :Data1, 'brighter_planet_billing/data1'
+    autoload :Offsets, 'brighter_planet_billing/offsets'
 
     include ::Singleton
     
@@ -56,6 +57,10 @@ module BrighterPlanet
     
     def data1
       Data1.instance
+    end
+
+    def offsets
+      Offsets.instance
     end
     
     def config
